@@ -67,6 +67,8 @@ home.file = {
     ranger # A console file manager with VI key bindings
     neovim # A text editor based on Vim
     nnn # terminal file manager
+    discord # A VoIP and instant messaging social platform
+    signal-desktop # A cross-platform encrypted messaging service for Congress
   ];
 
   # GitHub.com configuration for t3rp
