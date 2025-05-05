@@ -11,10 +11,17 @@ home.file = {
   ".config/sway/config" = { 
     source = ./sway.conf;
   };
-
   # tmux configuration
   ".tmux.conf" = {
     source = ./tmux.conf;
+  };
+  # wofi launcher configuration
+  ".config/wofi/config" = {
+    source = ./wofi.conf;
+  };
+    # wofi launcher configuration
+  ".config/wofi/style.css" = {
+    source = ./wofi-style.css;
   };
 };
 
@@ -22,6 +29,7 @@ home.file = {
   # If you need to run as root use sudo so that it's on path
   home.packages = with pkgs; [
     neofetch # for reddit points
+    tmux # terminal multiplexer
     zip # zip/unzip
     xz # xz compression
     unzip # unzip

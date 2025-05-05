@@ -1,6 +1,3 @@
 # Ignore the following files and directories
 **/.secret
 **/.secrets
-# Ignore hardware-configuration.nix
-# ln -s /etc/nixos/hardware-configuration.nix ~/nixos-config/hosts/ares/hardware-configuration.nix
-**/hardware-configuration.nix
