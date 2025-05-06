@@ -1,34 +1,72 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   # User configuration
-  home.username = "terp";
-  home.homeDirectory = "/home/terp";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
 
-# Home Manager configuration
-home.file = {
-  # Sway configuration
-  ".config/sway/config" = { 
-    source = ./sway.conf;
-  };
-  # tmux configuration
-  ".tmux.conf" = {
-    source = ./tmux.conf;
-  };
-  # wofi launcher configuration
-  ".config/wofi/config" = {
-    source = ./wofi.conf;
-  };
+  # Home Manager configuration
+  home.file = {
+    # Sway configuration
+    ".config/sway/config" = { 
+      source = ./config/sway/config;
+    };
+    # tmux configuration
+    ".config/tmux/tmux.conf" = {
+      source = ./config/tmux/tmux.conf;
+    };
     # wofi launcher configuration
-  ".config/wofi/style.css" = {
-    source = ./wofi-style.css;
+    ".config/wofi/config" = {
+      source = ./config/wofi/config;
+    };
+    # wofi launcher configuration
+    ".config/wofi/style.css" = {
+      source = ./config/wofi/style.css;
+    };
+    # waybar configuration
+    ".config/waybar/config" = {
+      source = ./config/waybar/config;
+    };
   };
-};
+
+  # Link script files
+  home.file.".bin" = {
+    source = ./scripts;
+    recursive = true;   # link recursively
+    executable = true;  # make all files executable
+  };
+
+  # Environment variables
+  home.sessionVariables = {
+    GTK_THEME = "Adwaita:dark";
+    QT_QPA_PLATFORMTHEME = "gtk2";
+    QT_STYLE_OVERRIDE = "Adwaita-Dark";
+  };
+
+  # GTK and icon theme
+    gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.gnome-themes-extra;
+    };
+  };
+
+  # QT Adwaita Dark
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk";
+  };
 
   # User profile packages, not on root
   # If you need to run as root use sudo so that it's on path
   home.packages = with pkgs; [
     neofetch # for reddit points
+    adwaita-qt # Adwaita dark theme for QT
     tmux # terminal multiplexer
     zip # zip/unzip
     xz # xz compression
@@ -77,6 +115,7 @@ home.file = {
     nnn # terminal file manager
     discord # A VoIP and instant messaging social platform
     signal-desktop # A cross-platform encrypted messaging service for Congress
+    python3 # Python 3, latest stable version
   ];
 
   # GitHub.com configuration for t3rp
@@ -103,7 +142,7 @@ home.file = {
     ];
   };
 
-  # Starship
+  # Starship fancy PS1
   programs.starship = {
     enable = true;
     # custom settings
@@ -113,7 +152,7 @@ home.file = {
     };
   };
 
-  # Alacritty
+  # Alacritty terminal configuration
   programs.alacritty = {
     enable = true;
     # custom settings
@@ -127,7 +166,7 @@ home.file = {
     };
   };
 
-  # Bash
+  # Bash and path configuration
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -135,10 +174,12 @@ home.file = {
       export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
     '';
 
-    # Aliases 
+    # Aliases for bash
     shellAliases = {
       urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
       urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+      nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
+      nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
     };
   };
 

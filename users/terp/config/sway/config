@@ -2,6 +2,31 @@
 # Copy this to ~/.config/sway/config and edit it to your liking.
 # Read `man 5 sway` for a complete reference.
 
+# Screenshots with dmenu selection
+bindsym Shift+f12 exec ~/.bin/sway_screenshot.sh
+
+# GMMK Pro Volum Bindings
+# Also working on XPS13
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+
+# Laptop brightness controls
+# Add user to sudo ALL on light
+bindsym XF86MonBrightnessUp exec sudo light -A 10
+bindsym XF86MonBrightnessDown exec sudo light -U 10
+
+# Clamshell configuration for laptop
+# https://www.reddit.com/r/swaywm/comments/eim1k1/conditional_clamshell_mode/
+set $laptop_screen 'eDP-1'
+bindswitch --reload --locked lid:on exec '[ $(swaymsg -t get_outputs | grep name | wc -l) == 1 ] || (swaymsg output $laptop_screen disable)'
+bindswitch --reload --locked lid:off output $laptop_screen enable
+
+# Keyboard modification
+input "type:touchpad" {
+	tap enabled
+}
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -24,13 +49,11 @@ set $image_viewer feh
 set $menu wofi --show drun
 
 # Gaps
-gaps outer 4
+gaps outer 2
 gaps inner 4
 
 ### Output configuration
-#
-# Default wallpaper (more resolutions are available in /run/current-system/sw/share/backgrounds/sway/)
-output * bg /run/current-system/sw/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg #333333 solid_color
 #
 # Example configuration:
 #

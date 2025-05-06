@@ -13,6 +13,8 @@
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # Blacklist nouveau kernel module
+  boot.blacklistedKernelModules = [ "nouveau" ];
 
   networking.hostName = "ares"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -74,16 +76,17 @@
     enable = true;
     wrapperFeatures.gtk = true; # so that gtk works properly
     extraPackages = with pkgs; [
-      swaylock
-      swayidle
-      wl-clipboard
-      wf-recorder
+      swaylock # screen locker
+      swayidle # screen locker
+      wl-clipboard # clipboard manager
+      wf-recorder # screen recorder
       mako # notification daemon
-      grim
-      slurp
+      grim # screenshot tool
+      slurp # screenshot tool
       wmenu # menu for sway
       wofi # dmenu replacement
       dmenu # Dmenu is the default in the config but i recommend wofi since its wayland native
+      waybar # Status bar for sway
     ];
     extraSessionCommands = ''
       export SSH_AUTH_SOCK
@@ -140,11 +143,13 @@
     description = "terp";
     extraGroups = [ "networkmanager" "wheel" "vboxusers"];
     packages = with pkgs; [
-    	git
-    	vim
-    	wget
-      kitty
-      alacritty
+    	git # version control
+    	vim # text editor
+      neovim # text editor
+    	wget # file downloader
+      kitty # terminal emulator
+      alacritty # terminal emulator 
+      nerdfonts # nerd fonts
     ];
   };
   
@@ -178,6 +183,7 @@
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
+  # Enable the Nvidia driver for Xorg and Wayland
   hardware.nvidia = {
 
     # Modesetting is required.

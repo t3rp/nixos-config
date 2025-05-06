@@ -6,29 +6,7 @@
 - My system configuration philosophy is to keep it simple, defaults where possible
 - Copy and paste at your own peril
 
-![Is it worth it? - XKCD](xkcd_is_it_worth_it.png)
-[XKCD Source](https://xkcd.com/1205/)
-
-## Configuration Structure
-
-```
-nixos-config on  main [?] took 6s ❯ tree
-├── flake.lock
-├── flake.nix
-├── hosts
-│   └── ares
-│       ├── configuration.nix
-│       └── hardware-configuration.nix
-├── README.md
-├── users
-│   └── terp
-│       ├── home.nix
-│       ├── sway.conf
-│       └── tmux.conf
-└── xkcd_is_it_worth_it.png
-```
-
-## Resources that have helped
+## Resources
 
 I typically use these references when looking for answers, in order:
 

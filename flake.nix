@@ -17,7 +17,11 @@
   outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
     nixosConfigurations = {
       # Workstation ARES
-      ares = nixpkgs.lib.nixosSystem {
+      ares = let
+        username = "terp";
+        specialArgs = {inherit username;};
+      in nixpkgs.lib.nixosSystem {
+        inherit specialArgs;
         system = "x86_64-linux";
         modules = [
           ./hosts/ares/configuration.nix
@@ -27,44 +31,31 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.terp = import ./users/terp/home.nix;
+            home-manager.extraSpecialArgs = inputs // specialArgs;
+            home-manager.users.${username} = import ./users/${username}/home.nix;
           }
         ];
       };
-      /*
-      # Laptop ATHENA
-      athena = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          ./hosts/athena/configuration.nix
-          # make home-manager as a module of nixos
-          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.terp = import ./users/terp/home.nix;
-          }
-        ];
-      };
-      */
-       /*
-      # Droplet C2 LOKI
-      loki = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          ./hosts/loki/configuration.nix
-          # make home-manager as a module of nixos
-          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.terp = import ./users/terp/home.nix;
-          }
-        ];
-      };
-      */
+      # Droplet Loki C2
+      # loki = let
+      #   username = "terp";
+      #   specialArgs = {inherit username;};
+      # in nixpkgs.lib.nixosSystem {
+      #   inherit specialArgs;
+      #   system = "x86_64-linux";
+      #   modules = [
+      #     ./hosts/loki/configuration.nix
+      #     # make home-manager as a module of nixos
+      #     # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
+      #     home-manager.nixosModules.home-manager
+      #     {
+      #       home-manager.useGlobalPkgs = true;
+      #       home-manager.useUserPackages = true;
+      #       home-manager.extraSpecialArgs = inputs // specialArgs;
+      #       home-manager.users.${username} = import ./users/${username}/home.nix;
+      #     }
+      #   ];
+      # };
     };
   };
 }
