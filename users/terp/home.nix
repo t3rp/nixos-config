@@ -36,6 +36,13 @@
     executable = true;  # make all files executable
   };
 
+  # Link script files
+  home.file.".bash_functions" = {
+    source = ./functions;
+    recursive = true;   # link recursively
+    executable = true;  # make all files executable
+  };
+
   # Environment variables
   home.sessionVariables = {
     GTK_THEME = "Adwaita:dark";
@@ -171,7 +178,12 @@
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+      # Add custom bin directories to PATH
+      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.bin"
+      # Load bash functions
+      for f in $HOME/.bash_functions/*.sh; do
+        [ -e "$f" ] && source "$f"
+      done
     '';
 
     # Aliases for bash
