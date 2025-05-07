@@ -1,4 +1,8 @@
-{ config, pkgs, username, ... }:
+{ config, pkgs, username ? builtins.getEnv "USER", ... }:
+
+# Username is an optional argument, if not provided it will default to the current user
+# This is useful for testing the configuration without needing to specify the username
+# Or when moving the configuration to a different user on a different machine
 
 {
   # User configuration

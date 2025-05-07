@@ -4,14 +4,17 @@
 set -euo pipefail
 
 # Install Nix package manager
+# Install Nix Package manager version 24.11
 sh <(curl -L https://nixos.org/nix/install)
+# Uninstall Nix if it was already installed
+sh <(curl -L https://nixos.org/nix/uninstall)
 
 # Source Nix profile for this session
 . "$HOME/.nix-profile/etc/profile.d/nix.sh" 2>/dev/null || \
 . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
 
 # Set up Home Manager
-nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 nix-channel --update
 nix-shell '<home-manager>' -A install
 
