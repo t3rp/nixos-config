@@ -27,6 +27,7 @@
           ./hosts/ares/configuration.nix
           ./hosts/modules/sway.nix
           ./hosts/modules/nvidia.nix
+          ./hosts/modules/libvirtd.nix
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
           home-manager.nixosModules.home-manager
