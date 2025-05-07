@@ -27,6 +27,10 @@
     ".config/waybar/config" = {
       source = ./config/waybar/config;
     };
+    # alacritty configuration
+    ".config/alacritty/alacritty.toml" = {
+      source = ./config/alacritty/alacritty.toml;
+    };
   };
 
   # Link script files
@@ -159,20 +163,6 @@
     settings = {
       add_newline = false;
       line_break.disabled = true;
-    };
-  };
-
-  # Alacritty terminal configuration
-  programs.alacritty = {
-    enable = true;
-    # custom settings
-    settings = {
-      env.TERM = "xterm-256color";
-      font = {
-        size = 12;
-      };
-      scrolling.multiplier = 5;
-      selection.save_to_clipboard = true;
     };
   };
 
