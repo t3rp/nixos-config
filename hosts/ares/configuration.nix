@@ -73,10 +73,21 @@
   # Enable libvirt support 
   virtualisation.libvirtd.enable = true;
 
+  # XDG portal support
+  # https://discourse.nixos.org/t/xdg-desktop-portal-not-working-on-wayland-while-kde-is-installed/20919/2
+  xdg.portal = {
+    enable = true;
+    # Enable the XDG portal for Wayland
+    wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+    ];
+  };
+
   # Keyring configuration
-  services.gnome.gnome-keyring.enable = true;
-  security.polkit.enable = true;
-  services.dbus.enable = true;
+  # services.gnome.gnome-keyring.enable = true;
+  # security.polkit.enable = true;
+  # services.dbus.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${username} = {
@@ -109,6 +120,7 @@
     wget # file downloader
     alacritty # terminal emulator
     greetd.tuigreet # terminal greeter
+    xdg-desktop-portal-wlr # portal for wayland
   ];
   
   # This value determines the NixOS release from which the default
