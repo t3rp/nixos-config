@@ -7,7 +7,7 @@ set -euo pipefail
 # Install Nix Package manager version 24.11
 sh <(curl -L https://nixos.org/nix/install)
 # Uninstall Nix if it was already installed
-sh <(curl -L https://nixos.org/nix/uninstall)
+# sh <(curl -L https://nixos.org/nix/uninstall)
 
 # Source Nix profile for this session
 . "$HOME/.nix-profile/etc/profile.d/nix.sh" 2>/dev/null || \
