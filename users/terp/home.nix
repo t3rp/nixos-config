@@ -123,6 +123,9 @@
     discord # A VoIP and instant messaging social platform
     signal-desktop # A cross-platform encrypted messaging service for Congress
     python3 # Python 3, latest stable version
+    obsidian # A note-taking and knowledge management application
+    spotify # A digital music service that gives you access to millions of songs
+    discord # A VoIP and instant messaging social platform
   ];
 
   # GitHub.com configuration for t3rp

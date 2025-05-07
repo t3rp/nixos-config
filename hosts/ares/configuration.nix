@@ -13,9 +13,9 @@
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
   # Define hostname
   networking.hostName = "ares"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -25,7 +25,6 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
@@ -38,38 +37,22 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  # Configure x11 resources for 4k monitor
-  # Enable the X11 windowing system
-  # services.xserver = {
-  #   enable = true;
-  #   displayManager.sessionCommands = ''
-  #     xrdb -merge <<EOF
-  #     Xcursor.size: 16
-  #     Xft.dpi: 172
-  #     EOF
-  #   '';
-  # };
+  # Enable greetd tui login
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
+        user = "greeter";
+      };
+    };
+  };
 
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
+  # Configure keymap
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
-
-  # Keyring
-  services.gnome.gnome-keyring.enable = true;
-
-  # Enable polkit for permission management
-  security.polkit.enable = true;
-  # Enable dbus
-  services.dbus.enable = true;
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
 
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
@@ -80,30 +63,27 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
   
   # Enable the Flakes feature and the accompanying new nix command-line tool
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
-  # Enable VirtualBox host support (kernel modules, services, etc.)
-  virtualisation.virtualbox.host.enable = true;
+  # Enable VirtualBox host support
+  # virtualisation.virtualbox.host.enable = true;
 
-  # Enable libvirt support (kernel modules, services, etc.)
+  # Enable libvirt support 
   virtualisation.libvirtd.enable = true;
 
-  # Fix for slow networking in virt-manager
-  networking.extraHosts = ''
-    127.0.0.1 localhost ${config.networking.hostName}
-  '';
+  # Keyring configuration
+  services.gnome.gnome-keyring.enable = true;
+  security.polkit.enable = true;
+  services.dbus.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";
     extraGroups = [ "networkmanager" "wheel" "vboxusers" "libvirtd"];
-    # Specific programs for this system and user
+    # Specific programs for this system + user
     packages = with pkgs; [
     virt-manager # virtual machine manager
     qemu # virtual machine manager
@@ -128,6 +108,7 @@
     firefox # web browser
     wget # file downloader
     alacritty # terminal emulator
+    greetd.tuigreet # terminal greeter
   ];
   
   # This value determines the NixOS release from which the default
