@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-# Usage: ./virtsh_kali_current.sh <vm-name>
+# Usage: sudo ./virtsh_kali_current.sh <vm-name>
 if [[ $# -ne 2 ]]; then
-    echo "Usage: $0 <vm-name> <iso-path>"
-    echo "Example: $0 kali-current"
+    echo "[+] Usage: $0 <vm-name> <iso-path>"
+    echo "[+] Example: $0 kali-current"
+    exit 1
+fi
+
+# Check if running as root or sudo
+if [[ $EUID -ne 0 ]]; then
+    echo "[!] This script must be run as root or with sudo."
     exit 1
 fi
 
@@ -14,7 +20,7 @@ RAM_GB=4 # Ram in Gigabytes
 VCPUS=4 # Number of virtual CPUs
 DISK_SIZE=200  # Gigabytes
 OS_VARIANT="debian11" # Closest match for Kali Linux
-DISK_PATH="$HOME/Documents/VMs/${VM_NAME}.qcow2" # Where to write the disk image
+DISK_PATH="/var/lib/libvirt/images/${VM_NAME}.qcow2" # Where to write the disk image
 RAM_MB=$((RAM_GB * 1024)) # Convert GB to MB
 
 # Create disk if it doesn't exist
@@ -24,13 +30,13 @@ fi
 
 # Check if the VM already exists
 if virsh list --all | grep -q "$VM_NAME"; then
-    echo "VM $VM_NAME already exists. Please choose a different name."
+    echo "[!] VM $VM_NAME already exists. Please choose a different name."
     exit 1
 fi
 
 # Check if the ISO file exists
 if [ ! -f "$ISO_PATH" ]; then
-    echo "ISO file $ISO_PATH not found. Please check the path."
+    echo "[!] ISO file $ISO_PATH not found. Please check the path."
     exit 1
 fi
 
@@ -52,9 +58,9 @@ virt-install \
 
 # Check if the VM was created successfully
 if [ $? -ne 0 ]; then
-    echo "Failed to create VM $VM_NAME."
+    echo "[!] Failed to create VM $VM_NAME."
     exit 1
 fi
 
 # Connect to the VM using virt-viewer or remote-viewer
-echo "VM $VM_NAME created. Connect with virt-viewer or remote-viewer using SPICE."
+echo "[+] VM $VM_NAME created. Connect with virt-viewer or remote-viewer using SPICE."

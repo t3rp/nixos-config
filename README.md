@@ -11,5 +11,6 @@
 I typically use these references when looking for answers, in order:
 
 - [NixOS & Flakes by Ryan Yin](https://nixos-and-flakes.thiscute.world/)
+- [MyNixOS](https://mynixos.com/)
 - [Official NixOS Manual](https://nixos.org/manual/nixos/stable/)
 - [Nix Reference Manual (Language)](https://nix.dev/manual/nix/2.26/language/)

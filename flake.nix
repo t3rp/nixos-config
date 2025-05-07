@@ -1,6 +1,8 @@
 {
   description = "NixOS Multi-host Configuration";
 
+  # Update flakes: nix flake update
+  # Update home manager: home-manager switch --flake .#homeconfigusername
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     # home-manager, used for managing user configuration
