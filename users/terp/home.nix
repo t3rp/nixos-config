@@ -15,6 +15,10 @@
     ".config/sway/config" = { 
       source = ./config/sway/config;
     };
+    # alacritty configuration
+    ".config/mako/config" = {
+      source = ./config/mako/config;
+    };
     # tmux configuration
     ".config/tmux/tmux.conf" = {
       source = ./config/tmux/tmux.conf;
@@ -23,7 +27,7 @@
     ".config/wofi/config" = {
       source = ./config/wofi/config;
     };
-    # wofi launcher configuration
+    # wofi launcher style
     ".config/wofi/style.css" = {
       source = ./config/wofi/style.css;
     };
@@ -134,6 +138,7 @@
     obsidian # A note-taking and knowledge management application
     spotify # A digital music service that gives you access to millions of songs
     discord # A VoIP and instant messaging social platform
+    bitwarden # A password manager
   ];
 
   # GitHub.com configuration for t3rp

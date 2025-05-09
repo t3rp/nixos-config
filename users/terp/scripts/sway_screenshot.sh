@@ -5,7 +5,7 @@ set -e
 ## USER PREFERENCES ##
 #MENU="dmenu -i"
 #MENU="rofi -i -dmenu -u 6,7,8,9"
-MENU="wofi --dmenu --location center -i -u 6,7,8,9"
+MENU="wofi --dmenu --location center -i" 
 RECORDER=wf-recorder
 TARGET=$(xdg-user-dir PICTURES)/Screenshots
 TARGET_VIDEOS=$(xdg-user-dir VIDEOS)/Recordings

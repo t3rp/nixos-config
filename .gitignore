@@ -1,3 +1,8 @@
 # Ignore the following files and directories
 **/.secret
 **/.secrets
+# Ignore NixOS result symlinks
+result
+**/result
+# Ignore NixOS build artifacts
+result-*
