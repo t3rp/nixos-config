@@ -19,6 +19,14 @@ if [ -f "/tmp/AUTOUNATTEND.iso" ]; then
     rm -f "/tmp/AUTOUNATTEND.iso"
 fi
 
+# Download latest virtio if not in tmp
+# From ProxMox wiki
+# https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+if [ ! -f "/tmp/virtio-win.iso" ]; then
+    echo "[!] Downloading latest virtio-win.iso to /tmp"
+    wget -O /tmp/virtio-win.iso https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+fi
+
 # Variables
 VM_NAME="$1"
 WIN11_ISO="$2"
@@ -66,6 +74,7 @@ sudo virt-install \
     --disk path="$DISK_PATH",format=qcow2 \
     --cdrom "$WIN11_ISO" \
     --disk path="$UNATTEND_ISO",device=cdrom \
+    --disk path=/tmp/virtio-win.iso,device=cdrom \
     --network bridge=virbr0,model=virtio \
     --graphics spice \
     --video qxl \
