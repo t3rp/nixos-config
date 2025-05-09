@@ -139,6 +139,7 @@
     spotify # A digital music service that gives you access to millions of songs
     discord # A VoIP and instant messaging social platform
     bitwarden # A password manager
+    cdrtools # A set of command-line tools for isos, using for virt-install autounattend
   ];
 
   # GitHub.com configuration for t3rp
