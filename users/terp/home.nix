@@ -1,13 +1,26 @@
-{ config, pkgs, username ? builtins.getEnv "USER", ... }:
+{ config, pkgs, username, lib, ... }:
 
 # Username is an optional argument, if not provided it will default to the current user
 # This is useful for testing the configuration without needing to specify the username
 # Or when moving the configuration to a different user on a different machine
 
+let
+  # Is NixOS? Nah?
+   isStandalone = !(config ? home && config.home ? username && config.home ? homeDirectory);
+  # Define shell aliases
+  myShellAliases = {
+    urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
+    urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+    nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
+    nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
+  };
+in
 {
-  # User configuration
-  home.username = username;
-  home.homeDirectory = "/home/${username}";
+  # If not NixOS then use standalone home-manager
+  # Only set these in standalone mode
+  # On NixOS, do NOT set them here!
+  home.username = lib.mkIf isStandalone (builtins.getEnv "USER");
+  home.homeDirectory = lib.mkIf isStandalone (builtins.getEnv "HOME");
 
   # Home Manager configuration
   home.file = {
@@ -17,7 +30,7 @@
     };
     # alacritty configuration
     ".config/mako/config" = {
-      source = ./config/mako/config;
+      source = ./config/alacritty/alacritty.toml;
     };
     # tmux configuration
     ".config/tmux/tmux.conf" = {
@@ -137,9 +150,9 @@
     python3 # Python 3, latest stable version
     obsidian # A note-taking and knowledge management application
     spotify # A digital music service that gives you access to millions of songs
-    discord # A VoIP and instant messaging social platform
     bitwarden # A password manager
-    cdrtools # A set of command-line tools for isos, using for virt-install autounattend
+    alacritty # A terminal emulator
+    firefox # A web browser
   ];
 
   # GitHub.com configuration for t3rp
@@ -154,17 +167,6 @@
       user.signingkey = "~/.ssh/id_ed25519_sk.pub";
     };
   };
-  
-  # VSCode
-  # Manage plugins and settings for Visual Studio Code
-  # Keeping extensions updated is a struggle
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      vscodevim.vim
-      bbenoist.nix
-    ];
-  };
 
   # Starship fancy PS1
   programs.starship = {
@@ -176,8 +178,8 @@
     };
   };
 
-  # Bash and path configuration
-  programs.bash = {
+  # Bash
+   programs.bash = {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
@@ -188,14 +190,22 @@
         [ -e "$f" ] && source "$f"
       done
     '';
+    shellAliases = myShellAliases;
+  };
 
-    # Aliases for bash
-    shellAliases = {
-      urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
-      urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
-      nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
-      nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
-    };
+  # ZSH
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    initExtra = ''
+      # Add custom bin directories to PATH
+      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.bin"
+      # Load bash functions (works in zsh too)
+      for f in $HOME/.bash_functions/*.sh; do
+        [ -e "$f" ] && source "$f"
+      done
+    '';
+    shellAliases = myShellAliases;
   };
 
   # This value determines the home Manager release that your
