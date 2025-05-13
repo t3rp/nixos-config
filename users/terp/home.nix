@@ -1,12 +1,16 @@
-{ config, pkgs, username, lib, ... }:
+# Home manager configuration
+
+{ 
+  config,
+  pkgs,
+  ... 
+}:
 
 # Username is an optional argument, if not provided it will default to the current user
 # This is useful for testing the configuration without needing to specify the username
 # Or when moving the configuration to a different user on a different machine
 
 let
-  # Is NixOS? Nah?
-   isStandalone = !(config ? home && config.home ? username && config.home ? homeDirectory);
   # Define shell aliases
   myShellAliases = {
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
@@ -16,42 +20,15 @@ let
   };
 in
 {
-  # If not NixOS then use standalone home-manager
-  # Only set these in standalone mode
-  # On NixOS, do NOT set them here!
-  home.username = lib.mkIf isStandalone (builtins.getEnv "USER");
-  home.homeDirectory = lib.mkIf isStandalone (builtins.getEnv "HOME");
-
   # Home Manager configuration
-  home.file = {
-    # Sway configuration
-    ".config/sway/config" = { 
-      source = ./config/sway/config;
-    };
-    # alacritty configuration
-    ".config/mako/config" = {
-      source = ./config/alacritty/alacritty.toml;
-    };
-    # tmux configuration
-    ".config/tmux/tmux.conf" = {
-      source = ./config/tmux/tmux.conf;
-    };
-    # wofi launcher configuration
-    ".config/wofi/config" = {
-      source = ./config/wofi/config;
-    };
-    # wofi launcher style
-    ".config/wofi/style.css" = {
-      source = ./config/wofi/style.css;
-    };
-    # waybar configuration
-    ".config/waybar/config" = {
-      source = ./config/waybar/config;
-    };
-    # alacritty configuration
-    ".config/alacritty/alacritty.toml" = {
-      source = ./config/alacritty/alacritty.toml;
-    };
+    home.file = {
+    ".config/sway/config" = { source = ./config/sway/config; };
+    ".config/mako/config" = { source = ./config/alacritty/alacritty.toml; };
+    ".config/tmux/tmux.conf" = { source = ./config/tmux/tmux.conf; };
+    ".config/wofi/config" = { source = ./config/wofi/config; };
+    ".config/wofi/style.css" = { source = ./config/wofi/style.css; };
+    ".config/waybar/config" = { source = ./config/waybar/config; };
+    ".config/alacritty/alacritty.toml" = { source = ./config/alacritty/alacritty.toml; };
   };
 
   # Link script files
@@ -70,6 +47,7 @@ in
 
   # Environment variables
   home.sessionVariables = {
+    NIXPKGS_ALLOW_UNFREE = "1";
     GTK_THEME = "Adwaita:dark";
     QT_QPA_PLATFORMTHEME = "gtk2";
     QT_STYLE_OVERRIDE = "Adwaita-Dark";
@@ -139,9 +117,7 @@ in
     ethtool # for `ethtool` command
     pciutils # lspci
     usbutils # lsusb
-    xfce.thunar # A file manager for the Xfce desktop environment
     nemo # A file manager for the Cinnamon desktop environment
-    kdePackages.dolphin # A file manager for the KDE desktop environment
     ranger # A console file manager with VI key bindings
     neovim # A text editor based on Vim
     nnn # terminal file manager
@@ -190,6 +166,16 @@ in
         [ -e "$f" ] && source "$f"
       done
     '';
+    profileExtra = ''
+      # Source Nix profile for login shells
+      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      fi
+      # Source .bashrc for login shells
+      if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+      fi
+    '';
     shellAliases = myShellAliases;
   };
 
@@ -204,6 +190,16 @@ in
       for f in $HOME/.bash_functions/*.sh; do
         [ -e "$f" ] && source "$f"
       done
+    '';
+    profileExtra = ''
+      # Source Nix profile for login shells
+      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      fi
+      # Source .zshrc for login shells
+      if [ -f "$HOME/.zshrc" ]; then
+        . "$HOME/.zshrc"
+      fi
     '';
     shellAliases = myShellAliases;
   };
