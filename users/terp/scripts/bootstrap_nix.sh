@@ -28,7 +28,8 @@ if [ ! -d "$HOME/nixos-config" ]; then
   git clone https://github.com/t3rp/nixos-config.git "$HOME/nixos-config"
 fi
 
+# Add home.username and home.homedirectory to the home.nix file
+# Add the lines to home.nix after "# Usearname and homedirectory"
 # Run home manager to set up the environment
-home-manager switch -f "$HOME/nixos-config/users/terp/home.nix" -b backup
-
-echo "Nix, Home Manager, and your dotfiles are set up!"
+# home-manager switch -f "$HOME/nixos-config/users/terp/home.nix" -b backup
+# echo "Nix, Home Manager, and your dotfiles are set up!"

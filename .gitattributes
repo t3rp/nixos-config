@@ -1,1 +1,4 @@
 nix linguist-generated=true
+*.sh linguist-detectable=false
+*.bash linguist-detectable=false
+*.css linguist-detectable=false
