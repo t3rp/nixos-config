@@ -20,11 +20,15 @@ let
   };
 in
 {
+  # Imports
+  imports = [
+    ./tmux.nix
+  ];
+
   # Home Manager configuration
     home.file = {
     ".config/sway/config" = { source = ./config/sway/config; };
     ".config/mako/config" = { source = ./config/alacritty/alacritty.toml; };
-    ".config/tmux/tmux.conf" = { source = ./config/tmux/tmux.conf; };
     ".config/wofi/config" = { source = ./config/wofi/config; };
     ".config/wofi/style.css" = { source = ./config/wofi/style.css; };
     ".config/waybar/config" = { source = ./config/waybar/config; };
