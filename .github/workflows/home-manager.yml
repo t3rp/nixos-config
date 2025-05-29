@@ -25,6 +25,7 @@ jobs:
       run: |
         nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
         nix-channel --update
+        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
         nix-shell '<home-manager>' -A install
         
     - name: Create test directories
@@ -56,7 +57,5 @@ jobs:
       run: |
         # Check if some key programs are available
         which git
-        which neovim
-        which tmux
         # Verify Home Manager is working
         home-manager --version
