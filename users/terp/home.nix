@@ -133,6 +133,9 @@ in
     bitwarden # A password manager
     alacritty # A terminal emulator
     firefox # A web browser
+    slack # A collaboration hub
+    zoom-us # A video conferencing tool
+    vlc # A video conferencing tool
   ];
 
   # GitHub.com configuration for t3rp
@@ -145,6 +148,26 @@ in
       commit.gpgsign = true;
       gpg.format = "ssh";
       user.signingkey = "~/.ssh/id_ed25519_sk.pub";
+    };
+  };
+
+  
+
+  # VSCode configuration
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      ms-python.python
+      redhat.vscode-yaml
+      ms-vscode.cpptools
+      ms-vscode.cmake-tools
+      ms-vscode.makefile-tools
+      golang.go
+      rust-lang.rust-analyzer
+      jnoortheen.nix-ide
+    ];
+    userSettings = {
+      "editor.rulers" = [ 80 120 ];
     };
   };
 

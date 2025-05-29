@@ -14,3 +14,7 @@ I typically use these references when looking for answers, in order:
 - [MyNixOS](https://mynixos.com/)
 - [Official NixOS Manual](https://nixos.org/manual/nixos/stable/)
 - [Nix Reference Manual (Language)](https://nix.dev/manual/nix/2.26/language/)
+
+## Lessons Learned
+
+- Home-manager may fail if it finds a file that already exist, but when running `nixos-rebuild` the output does not show what file/s need moved. The command `journalctl -xe --unit home-manager-terp.service` provides more complete output and allows you to find the offending files. If running in standalone mode you can add `-b backup` and it will backup the file in place.

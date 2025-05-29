@@ -3,10 +3,16 @@
 {
     # Blacklist nouveau kernel module
     boot.blacklistedKernelModules = [ "nouveau" ];
-    # Enable OpenGL
+   
+    # OpenGL
     hardware.graphics = {
         enable = true;
+        extraPackages = with pkgs; [
+            nvidia-vaapi-driver # VAAPI support for Nvidia GPUs
+            ocl-icd # OpenCL ICD loader
+        ];
     };
+
     # Load nvidia driver for Xorg and Wayland
     services.xserver.videoDrivers = ["nvidia"];
         # Enable the Nvidia driver for Xorg and Wayland
@@ -31,5 +37,5 @@
         # Enable the Nvidia settings menu,
         # accessible via `nvidia-settings`.
         nvidiaSettings = true;
-        };
+    };
 }

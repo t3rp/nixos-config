@@ -1,0 +1,62 @@
+name: Test Home Manager Configuration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-home-manager:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Nix
+      uses: cachix/install-nix-action@v23
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          
+    - name: Install Home Manager
+      run: |
+        nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+        nix-channel --update
+        nix-shell '<home-manager>' -A install
+        
+    - name: Create test directories
+      run: |
+        mkdir -p ~/.config/sway ~/.config/mako ~/.config/wofi ~/.config/waybar ~/.config/alacritty
+        mkdir -p ~/bin ~/.local/bin ~/go/bin ~/.bin
+        mkdir -p ~/.bash_functions
+        
+    - name: Create dummy config files (since they're referenced in home.nix)
+      run: |
+        # Create minimal config files to prevent Home Manager errors
+        touch users/terp/config/sway/config
+        touch users/terp/config/alacritty/alacritty.toml
+        touch users/terp/config/wofi/config
+        touch users/terp/config/wofi/style.css
+        touch users/terp/config/waybar/config
+        mkdir -p users/terp/scripts users/terp/functions
+        touch users/terp/scripts/dummy.sh
+        touch users/terp/functions/dummy.sh
+        touch users/terp/tmux.nix
+        echo '{}' > users/terp/tmux.nix
+        
+    - name: Test Home Manager configuration
+      run: |
+        cd users/terp
+        home-manager switch -f home.nix
+        
+    - name: Verify installation
+      run: |
+        # Check if some key programs are available
+        which git
+        which neovim
+        which tmux
+        # Verify Home Manager is working
+        home-manager --version

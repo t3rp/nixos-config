@@ -14,6 +14,16 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Mount network share
+  fileSystems."/mnt/NetworkShare" = { 
+  device = "//rackstation.home.arpa/NetworkShare";
+  fsType = "cifs";
+  options = let
+    # this line prevents hanging on network split
+    automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+    in ["${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=100"];
+  };
+
   # Define hostname
   networking.hostName = "ares"; # Define your hostname.
 
@@ -67,12 +77,6 @@
   # Enable the Flakes feature and the accompanying new nix command-line tool
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
-  # Enable VirtualBox host support
-  # virtualisation.virtualbox.host.enable = true;
-
-  # Enable libvirt support 
-  virtualisation.libvirtd.enable = true;
-
   # XDG portal support
   # https://discourse.nixos.org/t/xdg-desktop-portal-not-working-on-wayland-while-kde-is-installed/20919/2
   xdg.portal = {
@@ -82,6 +86,19 @@
     extraPortals = with pkgs; [
       xdg-desktop-portal-wlr
     ];
+  };
+
+  # Enable and configure SSH server
+  services.openssh = {
+    enable = true;
+    allowSFTP = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
+    extraConfig = ''
+      AuthenticationMethods publickey
+    '';
   };
 
   # Keyring configuration
@@ -121,6 +138,10 @@
     alacritty # terminal emulator
     greetd.tuigreet # terminal greeter
     xdg-desktop-portal-wlr # portal for wayland
+    hashcat # hashcat
+    cudatoolkit # CUDA toolkit
+    pwvucontrol # pwv control audio control
+    helvum # helvum audio mixer
   ];
   
   # This value determines the NixOS release from which the default
