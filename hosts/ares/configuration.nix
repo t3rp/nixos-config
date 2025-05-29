@@ -106,11 +106,17 @@
   # security.polkit.enable = true;
   # services.dbus.enable = true;
 
+  # Enable Docker
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";
-    extraGroups = [ "networkmanager" "wheel" "vboxusers" "libvirtd"];
+    extraGroups = [ "networkmanager" "wheel" "vboxusers" "libvirtd" "docker" ];
     # Specific programs for this system + user
     packages = with pkgs; [
     virt-manager # virtual machine manager

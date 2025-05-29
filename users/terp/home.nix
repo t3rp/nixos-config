@@ -6,10 +6,6 @@
   ... 
 }:
 
-# Username is an optional argument, if not provided it will default to the current user
-# This is useful for testing the configuration without needing to specify the username
-# Or when moving the configuration to a different user on a different machine
-
 let
   # Define shell aliases
   myShellAliases = {
@@ -17,12 +13,16 @@ let
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
     nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
+    nixcommit = "nixcommit.sh";
   };
 in
 {
   # Required Home Manager configuration
   home.username = "terp";
   home.homeDirectory = "/home/terp";
+  
+  # Allow unfree packages (for VSCode)
+  nixpkgs.config.allowUnfree = true;
 
   # Imports
   imports = [
@@ -140,6 +140,7 @@ in
     slack # A collaboration hub
     zoom-us # A video conferencing tool
     vlc # A video conferencing tool
+    act # a tool to run GitHub Actions locally
   ];
 
   # GitHub.com configuration for t3rp
