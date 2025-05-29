@@ -151,20 +151,18 @@ in
     };
   };
 
-  
-
   # VSCode configuration
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
-      ms-python.python
-      redhat.vscode-yaml
-      ms-vscode.cpptools
-      ms-vscode.cmake-tools
-      ms-vscode.makefile-tools
-      golang.go
-      rust-lang.rust-analyzer
-      jnoortheen.nix-ide
+      ms-python.python # Python support
+      redhat.vscode-yaml # YAML support
+      ms-vscode.cpptools # C/C++ support
+      ms-vscode.cmake-tools # CMake support
+      ms-vscode.makefile-tools # Makefile support
+      golang.go # Go support
+      rust-lang.rust-analyzer # Rust support
+      jnoortheen.nix-ide # Nix IDE support
     ];
     userSettings = {
       "editor.rulers" = [ 80 120 ];
@@ -174,7 +172,6 @@ in
   # Starship fancy PS1
   programs.starship = {
     enable = true;
-    # custom settings
     settings = {
       add_newline = false;
       line_break.disabled = true;

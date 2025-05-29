@@ -21,12 +21,26 @@ jobs:
         extra_nix_config: |
           experimental-features = nix-command flakes
           
+    - name: Verify Nix Installation
+      run: |
+        nix --version
+        nix-env --version
+        nix-channel --list
+        echo "NIX_PATH: $NIX_PATH"
+        
     - name: Install Home Manager
       run: |
         nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
         nix-channel --update
-        echo "export NIX_PATH=\$HOME/.nix-defexpr/channels:\$NIX_PATH" >> ~/.bashrc
-        source ~/.bashrc
+        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
+        nix-shell '<home-manager>' -A install
+        
+    - name: Verify Home Manager Installation
+      run: |
+        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
+        which home-manager
+        home-manager --version
+        nix-channel --list | grep home-manager
         
     - name: Create test directories
       run: |
@@ -34,15 +48,15 @@ jobs:
         mkdir -p ~/bin ~/.local/bin ~/go/bin ~/.bin
         mkdir -p ~/.bash_functions
         
-    - name: Create dummy config files (since they're referenced in home.nix)
+    - name: Create dummy config files
       run: |
-        # Create minimal config files to prevent Home Manager errors
+        mkdir -p users/terp/config/{sway,alacritty,wofi,waybar}
+        mkdir -p users/terp/{scripts,functions}
         touch users/terp/config/sway/config
         touch users/terp/config/alacritty/alacritty.toml
         touch users/terp/config/wofi/config
         touch users/terp/config/wofi/style.css
         touch users/terp/config/waybar/config
-        mkdir -p users/terp/scripts users/terp/functions
         touch users/terp/scripts/dummy.sh
         touch users/terp/functions/dummy.sh
         echo '{}' > users/terp/tmux.nix
@@ -51,12 +65,43 @@ jobs:
       run: |
         export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
         cd users/terp
-        nix-shell '<home-manager>' -A install --run "home-manager switch -f home.nix"
+        home-manager switch -f home.nix
         
-    - name: Verify installation
+    - name: Verify Nix packages are installed
       run: |
-        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
-        # Check if some key programs are available
+        # Check if programs from home.nix are available and from Nix store
+        echo "Checking git installation:"
         which git
-        # Verify Home Manager is working
-        nix-shell '<home-manager>' -A install --run "home-manager --version"
+        git --version
+        ls -la $(which git)
+        
+        echo "Checking if git is from Nix store:"
+        readlink $(which git) | grep -q "/nix/store" && echo "✓ Git is from Nix store" || echo "✗ Git is NOT from Nix store"
+        
+        echo "Checking VSCode installation:"
+        which code || echo "VSCode not found"
+        
+        echo "Checking starship installation:"
+        which starship
+        starship --version
+        readlink $(which starship) | grep -q "/nix/store" && echo "✓ Starship is from Nix store" || echo "✗ Starship is NOT from Nix store"
+        
+    - name: Verify Home Manager managed files
+      run: |
+        # Check if Home Manager created the expected symlinks
+        echo "Checking Home Manager managed files:"
+        ls -la ~/.config/
+        ls -la ~/.nix-profile/bin/ | head -10
+        
+        echo "Checking if dotfiles are properly linked:"
+        test -L ~/.config/sway/config && echo "✓ Sway config linked" || echo "✗ Sway config NOT linked"
+        test -L ~/.config/alacritty/alacritty.toml && echo "✓ Alacritty config linked" || echo "✗ Alacritty config NOT linked"
+        
+    - name: Final verification summary
+      run: |
+        echo "=== FINAL VERIFICATION ==="
+        echo "Home Manager version: $(home-manager --version)"
+        echo "Nix-managed programs in PATH:"
+        echo $PATH | tr ':' '\n' | grep nix-profile || echo "No nix-profile in PATH"
+        echo "Total packages installed by Home Manager:"
+        nix-env --query | wc -l
