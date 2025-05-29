@@ -2,24 +2,31 @@
 
 { 
   config,
+  lib,
   pkgs,
   ... 
 }:
 
 let
+  # Get username from environment, fallback to "terp" if not set
+  username = builtins.getEnv "USER";
+  homeDirectory = builtins.getEnv "HOME";
+  
   # Define shell aliases
   myShellAliases = {
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
     nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
+    homeswitch = "cd /home/terp/nixos-config/users/terp && home-manager switch -f home.nix";
     nixcommit = "nixcommit.sh";
+    nixfull = "nixswitch && homeswitch";  # Both together
   };
 in
 {
-  # Required Home Manager configuration
-  home.username = "terp";
-  home.homeDirectory = "/home/terp";
+  # Required Home Manager configuration - now dynamic with fallback
+  home.username = if username != "" then username else "terp";
+  home.homeDirectory = if homeDirectory != "" then homeDirectory else "/home/terp";
   
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
@@ -231,6 +238,14 @@ in
       fi
     '';
     shellAliases = myShellAliases;
+  };
+
+  # Nix configuration for user
+  nix = {
+    package = pkgs.nixVersions.stable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
   };
 
   # This value determines the home Manager release that your
