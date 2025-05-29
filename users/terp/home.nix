@@ -17,6 +17,7 @@ let
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
     nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
+    nixcommit = "nixswitch-and-commit";
   };
 in
 {
