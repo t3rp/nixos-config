@@ -8,6 +8,9 @@
 }:
 
 let
+  # Detect if we're in a CI environment
+  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
+  
   # Get username from environment, fallback to "terp" if not set
   username = builtins.getEnv "USER";
   homeDirectory = builtins.getEnv "HOME";
@@ -68,8 +71,8 @@ in
     QT_STYLE_OVERRIDE = "Adwaita-Dark";
   };
 
-  # GTK and icon theme
-    gtk = {
+  # GTK and icon theme - only enable if not in CI
+  gtk = lib.mkIf (!isCI) {
     enable = true;
     theme = {
       name = "Adwaita-dark";
@@ -81,10 +84,15 @@ in
     };
   };
 
-  # QT Adwaita Dark
-  qt = {
+  # QT Adwaita Dark - only enable if not in CI
+  qt = lib.mkIf (!isCI) {
     enable = true;
     platformTheme.name = "gtk";
+  };
+
+  # Services that require D-Bus - disable in CI
+  services = lib.mkIf (!isCI) {
+    # Any services you have configured
   };
 
   # User profile packages, not on root
