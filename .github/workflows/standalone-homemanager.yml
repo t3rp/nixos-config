@@ -14,7 +14,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Install Nix
+    - name: Install Nix Unstable
       uses: cachix/install-nix-action@v23
       with:
         nix_path: nixpkgs=channel:nixos-unstable
@@ -30,7 +30,8 @@ jobs:
         
     - name: Install Home Manager
       run: |
-        nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+        # Use release-24.11 to match your nixpkgs version
+        nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
         nix-channel --update
         export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
         nix-shell '<home-manager>' -A install
@@ -42,24 +43,9 @@ jobs:
         home-manager --version
         nix-channel --list | grep home-manager
         
-    - name: Create test directories
+    - name: Set CI environment variable
       run: |
-        mkdir -p ~/.config/sway ~/.config/mako ~/.config/wofi ~/.config/waybar ~/.config/alacritty
-        mkdir -p ~/bin ~/.local/bin ~/go/bin ~/.bin
-        mkdir -p ~/.bash_functions
-        
-    - name: Create dummy config files
-      run: |
-        mkdir -p users/terp/config/{sway,alacritty,wofi,waybar}
-        mkdir -p users/terp/{scripts,functions}
-        touch users/terp/config/sway/config
-        touch users/terp/config/alacritty/alacritty.toml
-        touch users/terp/config/wofi/config
-        touch users/terp/config/wofi/style.css
-        touch users/terp/config/waybar/config
-        touch users/terp/scripts/dummy.sh
-        touch users/terp/functions/dummy.sh
-        echo '{}' > users/terp/tmux.nix
+        echo "CI=true" >> $GITHUB_ENV
         
     - name: Test Home Manager configuration
       run: |
@@ -79,24 +65,36 @@ jobs:
         echo "Checking if git is from Nix store:"
         readlink $(which git) | grep -q "/nix/store" && echo "✓ Git is from Nix store" || echo "✗ Git is NOT from Nix store"
         
-        echo "Checking VSCode installation:"
-        which code || echo "VSCode not found"
+        echo "Checking VSCode installation (should be skipped in CI):"
+        which code || echo "VSCode not found (expected in CI)"
         
         echo "Checking starship installation:"
         which starship
         starship --version
         readlink $(which starship) | grep -q "/nix/store" && echo "✓ Starship is from Nix store" || echo "✗ Starship is NOT from Nix store"
         
+        echo "Checking basic CLI tools:"
+        which neofetch && echo "✓ neofetch found" || echo "✗ neofetch not found"
+        which btop && echo "✓ btop found" || echo "✗ btop not found"
+        which jq && echo "✓ jq found" || echo "✗ jq not found"
+        
     - name: Verify Home Manager managed files
       run: |
         # Check if Home Manager created the expected symlinks
         echo "Checking Home Manager managed files:"
-        ls -la ~/.config/
+        ls -la ~/.config/ || echo "No .config directory"
         ls -la ~/.nix-profile/bin/ | head -10
         
         echo "Checking if dotfiles are properly linked:"
-        test -L ~/.config/sway/config && echo "✓ Sway config linked" || echo "✗ Sway config NOT linked"
-        test -L ~/.config/alacritty/alacritty.toml && echo "✓ Alacritty config linked" || echo "✗ Alacritty config NOT linked"
+        test -L ~/.config/sway/config && echo "✓ Sway config linked" || echo "Note: Sway config not linked (expected in CI)"
+        test -L ~/.config/alacritty/alacritty.toml && echo "✓ Alacritty config linked" || echo "Note: Alacritty config not linked (expected in CI)"
+        
+        echo "Checking shell configuration:"
+        test -f ~/.bashrc && echo "✓ .bashrc exists" || echo "✗ .bashrc missing"
+        
+        echo "Checking git configuration:"
+        git config user.name || echo "Git user.name not set"
+        git config user.email || echo "Git user.email not set"
         
     - name: Final verification summary
       run: |
