@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# Generate human-readable timestamp for filename
-TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+# Create logs directory if it doesn't exist
+mkdir -p "$HOME/logs"
 
-# Start logging with timestamp in filename
-tmux pipe-pane -o "exec bash -c \"while IFS= read -r line; do printf '%%(%%Y%%m%%dT%%H%%M%%S%%z)T: %%s\n' -1 '\$line'; done; exec cat >> ./tmux-#S-#W-#I-#P-${TIMESTAMP}.log\"" \; display-message "Started logging to tmux-#S-#W-#I-#P-${TIMESTAMP}.log"
+# Generate timestamp for filename
+TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+
+# Simpler version that works reliably
+tmux pipe-pane -o "while read line; do echo \"\$(date +'%Y%m%dT%H%M%S%z'): \$line\"; done >> ./tmux-#S-#W-#I-#P-${TIMESTAMP}.log" \; display-message "Started logging to ./tmux-#S-#W-#I-#P-${TIMESTAMP}.log"
