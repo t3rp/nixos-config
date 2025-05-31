@@ -88,7 +88,7 @@ clone_config() {
 
 # Apply Home Manager configuration
 apply_home_manager() {
-    local config_dir="$HOME/nixos-config/users/terp"
+    local config_dir="$HOME/nixos-config/users"
     
     log "Applying Home Manager configuration..."
     cd "$config_dir"
@@ -145,7 +145,7 @@ EOF
 # Fix homeswitch alias for current user
 fix_homeswitch_alias() {
     local current_user=$(whoami)
-    local config_dir="$HOME/nixos-config/users/terp"
+    local config_dir="$HOME/nixos-config/users"
     
     if [ "$current_user" != "terp" ]; then
         log "Creating user-specific homeswitch alias..."

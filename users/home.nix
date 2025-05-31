@@ -11,7 +11,8 @@ let
   # Detect if we're in a CI environment
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
   
-  # Get username from environment, fallback to "terp" if not set
+  # Get username from environment
+  # Fix for home-manager on linux
   username = builtins.getEnv "USER";
   homeDirectory = builtins.getEnv "HOME";
   
@@ -20,10 +21,8 @@ let
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake .#$(hostname)";
-    nixbuild = "sudo nixos-rebuild build --flake .#$(hostname)";
-    homeswitch = "cd /home/terp/nixos-config/users/terp && home-manager switch -f home.nix";
-    nixcommit = "nixcommit.sh";
-    nixfull = "nixswitch && homeswitch";  # Both together
+    homeswitch = "cd /home/terp/nixos-config/users && home-manager switch -f home.nix";
+    nixfull = "nixswitch && homeswitch";
   };
 in
 {
@@ -97,6 +96,7 @@ in
 
   # User profile packages, not on root
   # If you need to run as root use sudo so that it's on path
+  # Split these soon into development/full and minimal
   home.packages = with pkgs; [
     neofetch # for reddit points
     adwaita-qt # Adwaita dark theme for QT
@@ -159,6 +159,7 @@ in
   ];
 
   # GitHub.com configuration for t3rp
+  # Split this into a module soon
   programs.git = {
     enable = true;
     userName = "t3rp";
@@ -172,6 +173,7 @@ in
   };
 
   # VSCode configuration
+  # Also as a module soon under development
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
@@ -199,6 +201,7 @@ in
   };
 
   # Bash
+  # Clean these up, don't need the recurse reference, handle above
    programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -224,6 +227,7 @@ in
   };
 
   # ZSH
+  # Same as bash
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -249,6 +253,7 @@ in
   };
 
   # Nix configuration for user
+  # Set this for flakes and nix command, still need env for first run
   nix = {
     package = pkgs.nixVersions.stable;
     extraOptions = ''
