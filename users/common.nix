@@ -35,7 +35,7 @@ in
 
   # Imports
   imports = [
-    ./tmux.nix
+    ./modules/tmux.nix
   ];
 
   # Home Manager configuration

@@ -52,7 +52,7 @@ jobs:
         export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
         cd users/terp
         # Use backup flag to handle existing files
-        home-manager switch -f home.nix -b backup
+        home-manager switch -f common.nix -b backup
         
     - name: Verify Nix packages are installed
       run: |
