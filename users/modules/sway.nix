@@ -76,7 +76,6 @@ in
       
       # Window rules
       window = {
-        titlebar = false;
         border = 1;
       };
       
@@ -102,24 +101,21 @@ in
       
       # Disable default bar
       bars = [];
-      
-      # Start waybar
-      # Hacky, kill waybar then start
-      startup = [
-        { command = "pkill waybar; ${pkgs.waybar}/bin/waybar"; always = true; }
-      ];
     };
     
     extraConfig = ''
       # System integration
       exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
       exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+      # Start waybar via systemd
+      # exec systemctl --user restart waybar.service
     '';
   };
 
   # MINIMAL Waybar configuration
   programs.waybar = {
     enable = true;
+    systemd.enable = true;
     settings = {
       mainBar = {
         layer = "top";
@@ -128,7 +124,7 @@ in
         
         # Minimal modules
         modules-left = [ "sway/workspaces" ];
-        modules-center = [ "custom/hostname" ];
+        modules-center = [ "username" ];
         modules-right = [ "clock" ];
         
         # Simple workspaces
@@ -142,9 +138,9 @@ in
           format = "{:%a %B %d - %H:%M}";   # Mon December 25 - 14:30
         };
 
-        # User@hostname module
-        "custom/hostname" = {
-          exec = "echo \"$USER@$(hostname)\"";
+        # Username
+        "username" = {
+          exec = "echo \"$USER\"";
           interval = "once";
           format = "{}";
         };
@@ -173,7 +169,7 @@ in
         background-color: #444444;
       }
 
-      #clock, #battery {
+      #clock, #custom-hostname {
         padding: 0 8px;
       }
     '';
