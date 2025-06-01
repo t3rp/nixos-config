@@ -30,6 +30,9 @@ in
     playerctl         # media control
     font-awesome      # for waybar icons
     liberation_ttf    # fonts
+    jq                # JSON processor (used by script)
+    xdg-user-dirs     # for xdg-user-dir command
+    wl-clipboard      # for wl-copy command
   ];
 
   # Sway configuration via Home Manager
@@ -53,7 +56,7 @@ in
       in lib.mkOptionDefault {
         # Custom keybindings
         "Shift+F12" = "exec ~/.bin/sway_screenshot.sh";
-        "Ctrl+Mod1+l" = "exec swaylock -f -c 222222";
+        "Ctrl+Mod1+l" = "exec swaylock -f -c 111111";
         
         # Volume controls
         "XF86AudioMute" = "exec pamixer --toggle-mute";
@@ -107,8 +110,6 @@ in
       # System integration
       exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
       exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-      # Start waybar via systemd
-      # exec systemctl --user restart waybar.service
     '';
   };
 
