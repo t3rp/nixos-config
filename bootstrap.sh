@@ -3,261 +3,72 @@
 
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+log() { echo -e "\033[0;32m[INFO]\033[0m $1"; }
+error() { echo -e "\033[0;31m[ERROR]\033[0m $1"; exit 1; }
 
-log() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
+# Check system compatibility
+[[ "$OSTYPE" == "linux-gnu"* ]] || error "Linux only"
 
-warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Check if running on supported system
-check_system() {
-    if [[ "$OSTYPE" != "linux-gnu"* ]]; then
-        error "This script only supports Linux systems"
-        exit 1
-    fi
-    
-    log "Running on $(uname -a)"
-}
-
-# Install Nix if not present
-install_nix() {
-    if command -v nix &> /dev/null; then
-        log "Nix is already installed"
-        return 0
-    fi
-    
+# Install Nix if needed
+if ! command -v nix &>/dev/null; then
     log "Installing Nix..."
     curl -L https://nixos.org/nix/install | sh -s -- --daemon
-    
     # Source nix for current session
-    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && \
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-    fi
-    
-    log "Nix installation completed"
-}
+fi
 
-# Setup Nix channels for 24.11 compatibility
-setup_nix_channels() {
-    log "Setting up Nix channels for 24.11 compatibility..."
-    
-    # Remove existing channels to start fresh
-    nix-channel --remove nixpkgs 2>/dev/null || true
-    nix-channel --remove home-manager 2>/dev/null || true
-    
-    # Add specific 24.11 channels
-    log "Adding nixpkgs 24.11 channel..."
-    nix-channel --add https://github.com/NixOS/nixpkgs/archive/nixos-24.11.tar.gz nixpkgs
-    
-    log "Adding home-manager 24.11 channel..."
-    nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
-    
-    log "Updating channels..."
-    nix-channel --update
-    
-    # Verify channels
-    log "Current channels:"
-    nix-channel --list
-}
+# Setup 24.11 channels
+log "Setting up 24.11 channels..."
+nix-channel --remove nixpkgs 2>/dev/null || true
+nix-channel --remove home-manager 2>/dev/null || true
+nix-channel --add https://github.com/NixOS/nixpkgs/archive/nixos-24.11.tar.gz nixpkgs
+nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
+nix-channel --update
 
 # Install Home Manager
-install_home_manager() {
-    if command -v home-manager &> /dev/null; then
-        log "Home Manager is already installed"
-        return 0
-    fi
-    
-    log "Installing Home Manager 24.11..."
-    
-    # Ensure proper NIX_PATH for installation
-    export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
-    
-    # Install Home Manager
+if ! command -v home-manager &>/dev/null; then
+    log "Installing Home Manager..."
+    export NIX_PATH="${NIX_PATH:-}$HOME/.nix-defexpr/channels"
     nix-shell '<home-manager>' -A install
-    
-    log "Home Manager installation completed"
-}
+fi
 
-# Clone configuration repository
-clone_config() {
-    local config_dir="$HOME/nixos-config"
-    
-    if [ -d "$config_dir" ]; then
-        warn "Configuration directory already exists at $config_dir"
-        read -p "Do you want to remove it and re-clone? (y/N): " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -rf "$config_dir"
-        else
-            log "Using existing configuration directory"
-            return 0
-        fi
-    fi
-    
-    log "Cloning configuration repository..."
+# Clone config
+config_dir="$HOME/nixos-config"
+if [ ! -d "$config_dir" ]; then
+    log "Cloning configuration..."
     git clone https://github.com/t3rp/nixos-config.git "$config_dir"
-    
-    log "Configuration cloned to $config_dir"
-}
+fi
 
-# Apply Home Manager configuration
-apply_home_manager() {
-    local config_dir="$HOME/nixos-config/users/terp"
-    
-    log "Applying Home Manager configuration..."
-    cd "$config_dir"
-    
-    # Ensure proper NIX_PATH for Home Manager
-    export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
-    
-    # Create a version-compatible wrapper if needed
-    if ! grep -q "home.enableNixpkgsReleaseCheck = false" home.nix; then
-        log "Creating version-compatible configuration..."
-        cat > home-compat.nix << 'EOF'
-{ config, pkgs, lib, ... }:
-let
-  # Import your main home.nix
-  mainConfig = import ./home.nix { inherit config pkgs lib; };
-in
-mainConfig // {
-  # Disable version check for maximum compatibility
-  home.enableNixpkgsReleaseCheck = false;
-}
-EOF
-        home-manager switch -f home-compat.nix -b backup
-    else
-        home-manager switch -f home.nix -b backup
-    fi
-    
-    log "Home Manager configuration applied successfully"
-}
+# Apply configuration
+log "Applying Home Manager configuration..."
+cd "$config_dir/users"
+export NIX_PATH="${NIX_PATH:-}$HOME/.nix-defexpr/channels"
+home-manager switch -f common.nix -b backup
 
-# Update shell configuration for proper Nix integration
-update_shell_config() {
-    local shell_rc=""
-    local current_shell=$(basename "$SHELL")
-    
-    case "$current_shell" in
-        bash)
-            shell_rc="$HOME/.bashrc"
-            ;;
-        zsh)
-            shell_rc="$HOME/.zshrc"
-            ;;
-        *)
-            warn "Unsupported shell: $current_shell. Manual configuration may be required."
-            return 0
-            ;;
-    esac
-    
-    log "Updating $shell_rc for Nix integration..."
-    
-    # Create backup
-    if [ -f "$shell_rc" ]; then
-        cp "$shell_rc" "${shell_rc}.backup.$(date +%Y%m%d_%H%M%S)"
-    fi
-    
-    # Add Nix sourcing if not already present
-    if ! grep -q "nix-profile/etc/profile.d/nix.sh" "$shell_rc" 2>/dev/null; then
-        cat >> "$shell_rc" << 'EOF'
+# Setup shell integration
+shell_rc="$HOME/.$(basename "$SHELL")rc"
+if ! grep -q "nix-profile/etc/profile.d/nix.sh" "$shell_rc" 2>/dev/null; then
+    log "Adding Nix integration to shell..."
+    cat >> "$shell_rc" << 'EOF'
 
 # Nix integration
-if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then 
-    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-fi
-
-# Home Manager session variables
-if [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-    . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-fi
+[ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+[ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
 EOF
-        log "Added Nix integration to $shell_rc"
-    else
-        log "Nix integration already present in $shell_rc"
-    fi
-}
+fi
 
-# Fix homeswitch alias for current user
-fix_homeswitch_alias() {
-    local current_user=$(whoami)
-    local config_dir="$HOME/nixos-config/users/terp"
-    
-    if [ "$current_user" != "terp" ]; then
-        log "Creating user-specific homeswitch alias..."
-        
-        # Create a local shell alias file
-        mkdir -p "$HOME/.local/bin"
-        cat > "$HOME/.local/bin/homeswitch" << EOF
+# Create homeswitch wrapper for non-terp users
+if [ "$(whoami)" != "terp" ]; then
+    mkdir -p "$HOME/.local/bin"
+    cat > "$HOME/.local/bin/homeswitch" << EOF
 #!/bin/bash
-export NIX_PATH=\$HOME/.nix-defexpr/channels:\$NIX_PATH
-cd $config_dir && home-manager switch -f home.nix
+export NIX_PATH="\${NIX_PATH:-}\$HOME/.nix-defexpr/channels"
+cd "$config_dir/users" && home-manager switch -f common.nix
 EOF
-        chmod +x "$HOME/.local/bin/homeswitch"
-        
-        # Add to PATH if not already there
-        if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.${current_shell}rc"
-        fi
-        
-        log "Created homeswitch script for user '$current_user'"
-    fi
-}
+    chmod +x "$HOME/.local/bin/homeswitch"
+    grep -q ".local/bin" "$shell_rc" || echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_rc"
+fi
 
-# Verify installation
-verify_installation() {
-    log "Verifying installation..."
-    
-    # Check Nix
-    if command -v nix &> /dev/null; then
-        log "✓ Nix: $(nix --version)"
-    else
-        error "✗ Nix not found"
-    fi
-    
-    # Check Home Manager
-    if command -v home-manager &> /dev/null; then
-        log "✓ Home Manager: $(home-manager --version)"
-    else
-        error "✗ Home Manager not found"
-    fi
-    
-    # Check channels
-    log "Channels:"
-    nix-channel --list | while read line; do
-        log "  $line"
-    done
-}
-
-# Main execution
-main() {
-    log "Starting automated Home Manager setup with 24.11 compatibility..."
-    
-    check_system
-    install_nix
-    setup_nix_channels
-    install_home_manager
-    clone_config
-    apply_home_manager
-    update_shell_config
-    fix_homeswitch_alias
-    verify_installation
-    
-    log "Setup completed successfully!"
-    log "Please restart your terminal or run 'source ~/.${SHELL##*/}rc' to load the new environment"
-    log "You can now use 'homeswitch' to update your Home Manager configuration"
-}
-
-# Run main function
-main "$@"
+log "✓ Setup complete! Restart your terminal or run: source $shell_rc"
+log "✓ Use 'homeswitch' to update your configuration"
