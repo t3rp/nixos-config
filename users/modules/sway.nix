@@ -6,6 +6,10 @@ let
   hasWayland = builtins.pathExists "/usr/share/wayland-sessions" 
             || builtins.pathExists "/run/current-system/sw/share/wayland-sessions"
             || builtins.pathExists "/nix/store";  # Assume NixOS has Wayland
+  
+  # Check if we're actually running in a Wayland session
+  isWaylandSession = builtins.getEnv "WAYLAND_DISPLAY" != "" 
+                  || builtins.getEnv "XDG_SESSION_TYPE" == "wayland";
 in
 {
   # Wayland-specific packages only
@@ -102,7 +106,9 @@ in
 
   programs.waybar = lib.mkIf (!isCI && hasWayland) {
     enable = true;
-    systemd.enable = true;
+    # Only enable systemd service if we're in a Wayland session
+    systemd.enable = isWaylandSession;
+    
     settings = {
       mainBar = {
         layer = "top";

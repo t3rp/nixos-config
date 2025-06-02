@@ -1,4 +1,4 @@
-name: Test Home Manager Configuration
+name: Home Manager Standalone
 
 on:
   push:

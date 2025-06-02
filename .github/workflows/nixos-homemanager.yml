@@ -1,4 +1,4 @@
-name: Test Home Manager Configuration on NixOS
+name: Home Manager on NixOS
 
 on:
   push:

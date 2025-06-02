@@ -1,6 +1,6 @@
 # NixOS Multiple Systems Configuration Flake
 
-- --I don't know what I'm doing--
+- ~~I don't know what I'm doing~~
 - I definitely know what I'm doing
 - This setup has been stable for me, running this for over a year
 - I do most of my work within a VM, e.g. Debian, Kali
