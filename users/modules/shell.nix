@@ -52,14 +52,14 @@ in
     shellAliases = myShellAliases;
   };
 
-  # ZSH - FIXED: Use initContent instead of initExtra
+  # ZSH - REVERT: Use initExtra for older Home Manager versions
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     
-    # CHANGED: initExtra -> initContent
-    initContent = ''
-      # Source Nix profile (moved from profileExtra)
+    # CHANGED BACK: initContent -> initExtra for compatibility
+    initExtra = ''
+      # Source Nix profile
       if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
       fi
