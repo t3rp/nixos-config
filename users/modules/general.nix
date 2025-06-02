@@ -1,12 +1,27 @@
 { 
   config, 
   pkgs, 
+  lib, 
   ... 
 }:
 
+let
+  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
+in
 {
-  # General applications and utilities
-  home.packages = with pkgs; [
+  # Shared desktop applications (work in both X11 and Wayland)
+  home.packages = with pkgs; lib.optionals (!isCI) [
+    alacritty # terminal emulator
+    firefox # web browser
+    feh # image viewer
+    nemo # file manager
+    brightnessctl # brightness control
+    pamixer # audio control
+    playerctl # media control
+    font-awesome # for status bar icons
+    liberation_ttf # base fonts
+    jq # JSON processor
+    xdg-user-dirs     # for xdg-user-dir command
     neofetch # for reddit points
     adwaita-qt # Adwaita dark theme for QT
     zip # zip/unzip
@@ -64,4 +79,12 @@
     vlc # A video conferencing tool
     act # a tool to run GitHub Actions locally
   ];
+
+  # Shared application paths for consistent reference
+  home.sessionVariables = lib.mkIf (!isCI) {
+    TERMINAL = "${pkgs.alacritty}/bin/alacritty";
+    BROWSER = "${pkgs.firefox}/bin/firefox";
+    FILE_MANAGER = "${pkgs.nemo}/bin/nemo";
+    IMAGE_VIEWER = "${pkgs.feh}/bin/feh";
+  };
 }

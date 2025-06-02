@@ -1,80 +1,67 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Application configuration
-  apps = {
-    fileManager = "${pkgs.nemo}/bin/nemo";
-    browser = "${pkgs.firefox}/bin/firefox";
-    imageViewer = "${pkgs.feh}/bin/feh";
-    terminal = "${pkgs.alacritty}/bin/alacritty";
-  };
+  # Detect environment capabilities
+  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
+  hasWayland = builtins.pathExists "/usr/share/wayland-sessions" 
+            || builtins.pathExists "/run/current-system/sw/share/wayland-sessions"
+            || builtins.pathExists "/nix/store";  # Assume NixOS has Wayland
 in
 {
-  # Sway-related packages for the user
-  home.packages = with pkgs; [
-    alacritty         # terminal emulator
-    firefox           # web browser
-    feh               # image viewer
-    nemo              # file manager
-    wf-recorder       # screen recorder
-    mako              # notification daemon
-    grim              # screenshot tool
-    slurp             # screenshot tool
-    wofi              # dmenu replacement
-    waybar            # status bar
-    swaylock          # screen locker
-    swayidle          # idle manager
-    feh               # image viewer
-    brightnessctl     # brightness control
-    pamixer           # audio control
-    playerctl         # media control
-    font-awesome      # for waybar icons
-    liberation_ttf    # fonts
-    jq                # JSON processor (used by script)
-    xdg-user-dirs     # for xdg-user-dir command
-    wl-clipboard      # for wl-copy command
+  # Wayland-specific packages only
+  home.packages = with pkgs; lib.optionals (!isCI && hasWayland) [
+    # Wayland-only packages
+    waybar 
+    swaylock 
+    swayidle 
+    wl-clipboard 
+    grim 
+    slurp 
+    wofi 
+    mako 
+    wf-recorder
   ];
 
-  # Sway configuration via Home Manager
-  wayland.windowManager.sway = {
+  # Only enable Sway if Wayland is available and not in CI
+  wayland.windowManager.sway = lib.mkIf (!isCI && hasWayland) {
     enable = true;
     
     config = {
       # Basic settings
       modifier = "Mod4";  # Super key
-      terminal = apps.terminal;
+      terminal = "$TERMINAL";      # Use environment variable
       menu = "wofi --show drun";
       
       # Font
-      fonts = {
-        size = 9.0;  # Increase from default (usually 10)
-      };
+      fonts.size = 9.0;  # Increase from default (usually 10)
       
       # Keybindings
       keybindings = let 
         modifier = "Mod4";
       in lib.mkOptionDefault {
-        # Custom keybindings
-        "Shift+F12" = "exec ~/.bin/sway_screenshot.sh";
-        "Ctrl+Mod1+l" = "exec swaylock -f -c 111111";
-        
-        # Volume controls
+        # Volume/brightness (works in both WMs)
         "XF86AudioMute" = "exec pamixer --toggle-mute";
         "XF86AudioLowerVolume" = "exec pamixer --decrease 5";
         "XF86AudioRaiseVolume" = "exec pamixer --increase 5";
-        
-        # Brightness controls  
         "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
         "XF86MonBrightnessUp" = "exec brightnessctl set 5%+";
         
-        # Screenshot
-        "Print" = "exec grim";
+        # Sway-specific
+        "Ctrl+Mod1+l" = "exec swaylock -f -c 111111";
         
-        # Application keybindings
-        "${modifier}+Shift+f" = "exec ${apps.fileManager}";
-        "${modifier}+Shift+b" = "exec ${apps.browser}";
-        "${modifier}+Shift+i" = "exec ${apps.imageViewer}";
-        "${modifier}+Return" = "exec ${apps.terminal}";
+        # Enhanced screenshots
+        "Print" = "exec grim ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Screenshot saved'";
+        "${modifier}+Print" = "exec grim -g \"$(slurp)\" ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Area screenshot saved'";
+        "${modifier}+Shift+Print" = "exec grim -g \"$(swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | \"\\(.x),\\(.y) \\(.width)x\\(.height)\"')\" ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Window screenshot saved'";
+        
+        # Screenshot to clipboard (your current behavior)
+        "Ctrl+Print" = "exec grim - | wl-copy";
+        "Ctrl+${modifier}+Print" = "exec grim -g \"$(slurp)\" - | wl-copy";
+        
+        # Applications using env vars
+        "${modifier}+Shift+f" = "exec $FILE_MANAGER";
+        "${modifier}+Shift+b" = "exec $BROWSER";
+        "${modifier}+Return" = "exec $TERMINAL";
       };
       
       # Window rules
@@ -108,13 +95,12 @@ in
     
     extraConfig = ''
       # System integration
-      exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
+      exec systemctl --user import-environment
       exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
     '';
   };
 
-  # MINIMAL Waybar configuration
-  programs.waybar = {
+  programs.waybar = lib.mkIf (!isCI && hasWayland) {
     enable = true;
     systemd.enable = true;
     settings = {

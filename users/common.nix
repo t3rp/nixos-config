@@ -32,6 +32,7 @@ in
     ./modules/shell.nix
     ./modules/git.nix
     ./modules/vscode.nix
+    ./modules/i3.nix
   ];
 
   # Link script files
