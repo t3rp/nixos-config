@@ -40,7 +40,7 @@ jobs:
         
         # Verify the flake outputs exist
         nix flake show
-        nix eval .#nixosConfigurations.ares.config.system.build.toplevel --dry-run
+        nix build .#nixosConfigurations.ares.config.system.build.toplevel --dry-run
         
     - name: Install Home Manager via flake
       run: |
