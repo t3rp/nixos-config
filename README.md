@@ -25,7 +25,7 @@ I typically use these references when looking for answers, in order:
 - Quick script to bootstrap things
 
 ```bash
-curl -L https://raw.githubusercontent.com/t3rp/nixos-config/main/bootstrap.sh | sh
+curl -L https://raw.githubusercontent.com/t3rp/nixos-config/main/bootstrap.sh | bash
 ```
 
 ### Common Commands
