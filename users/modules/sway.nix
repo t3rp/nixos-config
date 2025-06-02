@@ -1,27 +1,11 @@
 { config, pkgs, lib, ... }:
 
 let
-  # More conservative detection
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-  
-  # Check if Wayland is available on the system
-  hasWayland = builtins.pathExists "/usr/share/wayland-sessions" 
-            || builtins.pathExists "/run/current-system/sw/share/wayland-sessions"
-            || builtins.pathExists "/nix/store";
-  
-  # More specific Wayland session detection
-  waylandDisplay = builtins.getEnv "WAYLAND_DISPLAY";
-  sessionType = builtins.getEnv "XDG_SESSION_TYPE";
-  
-  # Only true if we have clear evidence of a running Wayland session
-  isWaylandSession = waylandDisplay != "" && waylandDisplay != null;
-  
-  # Alternative: be more permissive for testing
-  # isWaylandSession = sessionType == "wayland" || waylandDisplay != "";
 in
 {
   # Wayland-specific packages only
-  home.packages = with pkgs; lib.optionals (!isCI && hasWayland) [
+  home.packages = with pkgs; lib.optionals (!isCI) [
     # Wayland-only packages
     waybar 
     swaylock 
@@ -35,14 +19,14 @@ in
   ];
 
   # Only enable Sway if Wayland is available and not in CI
-  wayland.windowManager.sway = lib.mkIf (!isCI && hasWayland) {
+  wayland.windowManager.sway = lib.mkIf (!isCI) {
     enable = true;
     
     config = {
       # Basic settings
       modifier = "Mod4";  # Super key
-      terminal = "$TERMINAL";      # Use environment variable
-      menu = "wofi --show drun";
+      terminal = "${pkgs.alacritty}/bin/alacritty";  # CHANGE: Use direct pat
+      menu = "${pkgs.wofi}/bin/wofi --show drun";    # CHANGE: Use direct path
       
       # Font
       fonts.size = 9.0;  # Increase from default (usually 10)
@@ -112,11 +96,11 @@ in
     '';
   };
 
-  programs.waybar = lib.mkIf (!isCI && hasWayland) {
+  programs.waybar = lib.mkIf (!isCI) {
     enable = true;
     
     # Be very conservative about systemd service
-    systemd.enable = isWaylandSession && !isCI;
+    systemd.enable = !isCI;
     
     settings = {
       mainBar = {

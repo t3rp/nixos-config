@@ -3,9 +3,6 @@
 let
   # Detect environment capabilities
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-  hasX11 = builtins.pathExists "/usr/share/xsessions" 
-        || builtins.pathExists "/run/current-system/sw/share/xsessions"
-        || builtins.pathExists "/nix/store";
   
   # Use same apps configuration as Sway for consistency
   apps = {
@@ -17,7 +14,7 @@ let
 in
 {
   # Single xsession configuration that includes BOTH initExtra AND windowManager
-  xsession = lib.mkIf (!isCI && hasX11) {
+  xsession = lib.mkIf (!isCI) {
     enable = true;
     
     # Set up environment
@@ -190,7 +187,7 @@ in
   };
 
   # X11-specific packages
-  home.packages = with pkgs; lib.optionals (!isCI && hasX11) [
+  home.packages = with pkgs; lib.optionals (!isCI) [
     # X11-only packages
     rofi 
     i3lock 
@@ -200,7 +197,7 @@ in
   ];
 
   # Rofi only if i3 is enabled
-  programs.rofi = lib.mkIf (!isCI && hasX11) {
+  programs.rofi = lib.mkIf (!isCI) {
     enable = true;
     theme = "Arc-Dark";
     extraConfig = {
