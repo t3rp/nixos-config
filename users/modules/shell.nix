@@ -30,8 +30,7 @@ in
   };
 
   # Bash
-  # Clean these up, don't need the recurse reference, handle above
-   programs.bash = {
+  programs.bash = {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
@@ -53,12 +52,13 @@ in
     shellAliases = myShellAliases;
   };
 
-  # ZSH
-  # Same as bash
+  # ZSH - FIXED: Use initContent instead of initExtra
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    initExtra = ''
+    
+    # CHANGED: initExtra -> initContent
+    initContent = ''
       # Source Nix profile (moved from profileExtra)
       if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
@@ -74,6 +74,7 @@ in
         [ -e "$f" ] && source "$f"
       done
     '';
+    
     shellAliases = myShellAliases;
   };
 }

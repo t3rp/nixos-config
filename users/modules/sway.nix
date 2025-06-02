@@ -1,15 +1,23 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Detect environment capabilities
+  # More conservative detection
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
+  
+  # Check if Wayland is available on the system
   hasWayland = builtins.pathExists "/usr/share/wayland-sessions" 
             || builtins.pathExists "/run/current-system/sw/share/wayland-sessions"
-            || builtins.pathExists "/nix/store";  # Assume NixOS has Wayland
+            || builtins.pathExists "/nix/store";
   
-  # Check if we're actually running in a Wayland session
-  isWaylandSession = builtins.getEnv "WAYLAND_DISPLAY" != "" 
-                  || builtins.getEnv "XDG_SESSION_TYPE" == "wayland";
+  # More specific Wayland session detection
+  waylandDisplay = builtins.getEnv "WAYLAND_DISPLAY";
+  sessionType = builtins.getEnv "XDG_SESSION_TYPE";
+  
+  # Only true if we have clear evidence of a running Wayland session
+  isWaylandSession = waylandDisplay != "" && waylandDisplay != null;
+  
+  # Alternative: be more permissive for testing
+  # isWaylandSession = sessionType == "wayland" || waylandDisplay != "";
 in
 {
   # Wayland-specific packages only
@@ -106,8 +114,9 @@ in
 
   programs.waybar = lib.mkIf (!isCI && hasWayland) {
     enable = true;
-    # Only enable systemd service if we're in a Wayland session
-    systemd.enable = isWaylandSession;
+    
+    # Be very conservative about systemd service
+    systemd.enable = isWaylandSession && !isCI;
     
     settings = {
       mainBar = {
