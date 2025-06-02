@@ -34,6 +34,12 @@ jobs:
       run: |
         # Test that the flake can be evaluated
         nix flake check --no-build
+        
+        # Test evaluation of NixOS configuration (without --dry-run)
+        nix eval .#nixosConfigurations.ares.config.system.stateVersion --raw
+        
+        # Verify the flake outputs exist
+        nix flake show
         nix eval .#nixosConfigurations.ares.config.system.build.toplevel --dry-run
         
     - name: Install Home Manager via flake
@@ -79,14 +85,16 @@ jobs:
         export USER=terp
         export HOME=/home/terp
         
-        # Test that nixswitch command would work (dry-run)
+        # Test that nixswitch command would work
         echo "Testing nixswitch alias functionality..."
         cd /home/terp/nixos-config
         
         # Simulate what nixswitch would do (without sudo)
         nix flake check --no-build
-        nix eval .#nixosConfigurations.ares.config.system.build.toplevel --dry-run
         
+        # Test evaluation instead of dry-run
+        nix eval .#nixosConfigurations.ares.config.system.stateVersion --raw
+        echo ""
         echo "✓ NixOS flake configuration is valid"
         
     - name: Verify Home Manager integration
