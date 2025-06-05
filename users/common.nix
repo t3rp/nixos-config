@@ -12,53 +12,75 @@ let
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
   
   # Get username from environment
-  # Fix for home-manager on linux
   username = builtins.getEnv "USER";
   homeDirectory = builtins.getEnv "HOME";
+  
+  # Helper variable for consistent username
+  effectiveUsername = if username != "" then username else "terp";
+  
+  # Platform detection using builtins instead of pkgs to avoid recursion
+  system = builtins.currentSystem;
+  isDarwin = builtins.match ".*-darwin" system != null;
+  isLinux = builtins.match ".*-linux" system != null;
+  
+  # NixOS detection
+  isNixOS = builtins.pathExists /etc/os-release && 
+    (builtins.match ".*ID=nixos.*" (builtins.readFile /etc/os-release) != null);
 in
 {
-  # Required Home Manager configuration - now dynamic with fallback
-  home.username = if username != "" then username else "terp";
-  home.homeDirectory = if homeDirectory != "" then homeDirectory else "/home/terp";
+  # Username/HomeDir
+  home.username = effectiveUsername;
+  home.homeDirectory = if homeDirectory != "" then homeDirectory else 
+    (if isDarwin then "/Users/${effectiveUsername}" else "/home/${effectiveUsername}");
   
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
 
-  # Imports
+  # Imports - conditionally import based on platform and system type
   imports = [
     ./modules/general.nix
     ./modules/tmux.nix
-    ./modules/sway.nix
     ./modules/shell.nix
     ./modules/git.nix
     ./modules/vscode.nix
-    ./modules/i3.nix
+  ] ++ lib.optionals isDarwin [
+    # Darwin/macOS-specific
+  ] ++ lib.optionals (isLinux && !isNixOS) [
+    # Standalone Linux systems (Debian, Ubuntu, Kali, etc.)
+    ./modules/sway.nix
+  ] ++ lib.optionals isNixOS [
+    # NixOS-specific integration
+    ./modules/sway.nix
   ];
 
   # Link script files
   home.file.".bin" = {
     source = ./scripts;
-    recursive = true;   # link recursively
-    executable = true;  # make all files executable
+    recursive = true;
+    executable = true;
   };
 
   # Link function files
   home.file.".bash_functions" = {
     source = ./functions;
-    recursive = true;   # link recursively
-    executable = true;  # make all files executable
+    recursive = true;
+    executable = true;
   };
 
   # Environment variables
   home.sessionVariables = {
     NIXPKGS_ALLOW_UNFREE = "1";
+  } // lib.optionalAttrs isLinux {
     GTK_THEME = "Adwaita:dark";
     QT_QPA_PLATFORMTHEME = "gtk2";
     QT_STYLE_OVERRIDE = "Adwaita-Dark";
+  } // lib.optionalAttrs isDarwin {
+    # Darwin-specific environment variables if needed
+    # HOMEBREW_NO_AUTO_UPDATE = "1";
   };
 
-  # GTK and icon theme - only enable if not in CI
-  gtk = lib.mkIf (!isCI) {
+  # GTK and icon theme - only enable on Linux and not in CI
+  gtk = lib.mkIf (isLinux && !isCI) {
     enable = true;
     theme = {
       name = "Adwaita-dark";
@@ -70,19 +92,38 @@ in
     };
   };
 
-  # QT Adwaita Dark - only enable if not in CI
-  qt = lib.mkIf (!isCI) {
+  # QT Adwaita Dark - only enable on Linux and not in CI
+  qt = lib.mkIf (isLinux && !isCI) {
     enable = true;
     platformTheme.name = "gtk";
   };
 
-  # Services that require D-Bus - disable in CI
-  services = lib.mkIf (!isCI) {
-    # Any services you have configured
+  # Services that require D-Bus - disable in CI and on Darwin
+  services = lib.mkIf (isLinux && !isCI) {
+    # Add any Linux-specific services here
+    # Enable SSH agent service
+    ssh-agent = {
+      enable = true;
+    };
+  } // lib.optionalAttrs isDarwin {
+    # Enable SSH agent on macOS too
+    ssh-agent = {
+      enable = true;
+    };
   };
 
+  # Packages that vary by platform/system
+  home.packages = with pkgs; [
+    # Universal packages (work everywhere)
+  ] ++ lib.optionals isDarwin [
+    # macOS-specific packages
+  ] ++ lib.optionals (isLinux && !isNixOS) [
+    # Non-NixOS Linux specific packages
+  ] ++ lib.optionals isNixOS [
+    # NixOS-specific packages (if any)
+  ];
+
   # Nix configuration for user
-  # Set this for flakes and nix command, still need env for first run
   nix = {
     package = pkgs.nixVersions.stable;
     extraOptions = ''

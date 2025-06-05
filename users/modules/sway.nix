@@ -99,8 +99,8 @@ in
   programs.waybar = lib.mkIf (!isCI) {
     enable = true;
     
-    # Be very conservative about systemd service
-    systemd.enable = !isCI;
+    # Use default systemd integration
+    systemd.enable = true;
     
     settings = {
       mainBar = {
