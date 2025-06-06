@@ -2,36 +2,39 @@
 
 { 
   config,
-  lib,
   pkgs,
+  lib,
+  username ? "terp",
+  system ? null,
   ... 
 }:
 
 let
+  # Use passed system or fall back to builtins.currentSystem
+  actualSystem = if system != null then system else builtins.currentSystem;
+  isDarwin = builtins.match ".*-darwin" actualSystem != null;
+  isLinux = builtins.match ".*-linux" actualSystem != null;
+  
   # Detect if we're in a CI environment
   isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
   
-  # Get username from environment
-  username = builtins.getEnv "USER";
-  homeDirectory = builtins.getEnv "HOME";
+  # Get home directory from environment (renamed to avoid conflicts)
+  envHomeDirectory = builtins.getEnv "HOME";
   
-  # Helper variable for consistent username
-  effectiveUsername = if username != "" then username else "terp";
-  
-  # Platform detection using builtins instead of pkgs to avoid recursion
-  system = builtins.currentSystem;
-  isDarwin = builtins.match ".*-darwin" system != null;
-  isLinux = builtins.match ".*-linux" system != null;
+  # Use the passed username parameter directly
+  effectiveUsername = username;
   
   # NixOS detection
   isNixOS = builtins.pathExists /etc/os-release && 
     (builtins.match ".*ID=nixos.*" (builtins.readFile /etc/os-release) != null);
 in
 {
-  # Username/HomeDir
-  home.username = effectiveUsername;
-  home.homeDirectory = if homeDirectory != "" then homeDirectory else 
-    (if isDarwin then "/Users/${effectiveUsername}" else "/home/${effectiveUsername}");
+  # Username/HomeDir - use mkDefault so flake config can override
+  home.username = lib.mkDefault effectiveUsername;
+  home.homeDirectory = lib.mkDefault (
+    if envHomeDirectory != "" then envHomeDirectory else 
+    (if isDarwin then "/Users/${effectiveUsername}" else "/home/${effectiveUsername}")
+  );
   
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
@@ -47,10 +50,8 @@ in
     # Darwin/macOS-specific
   ] ++ lib.optionals (isLinux && !isNixOS) [
     # Standalone Linux systems (Debian, Ubuntu, Kali, etc.)
-    ./modules/sway.nix
   ] ++ lib.optionals isNixOS [
     # NixOS-specific integration
-    ./modules/sway.nix
   ];
 
   # Link script files

@@ -98,8 +98,6 @@ in
 
   programs.waybar = lib.mkIf (!isCI) {
     enable = true;
-    
-    # Use default systemd integration
     systemd.enable = true;
     
     settings = {

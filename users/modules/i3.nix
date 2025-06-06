@@ -1,20 +1,8 @@
 { config, pkgs, lib, ... }:
 
-let
-  # Detect environment capabilities
-  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-  
-  # Use same apps configuration as Sway for consistency
-  apps = {
-    fileManager = "${pkgs.nemo}/bin/nemo";
-    browser = "${pkgs.firefox}/bin/firefox";
-    imageViewer = "${pkgs.feh}/bin/feh";
-    terminal = "${pkgs.alacritty}/bin/alacritty";
-  };
-in
 {
-  # Single xsession configuration that includes BOTH initExtra AND windowManager
-  xsession = lib.mkIf (!isCI) {
+  # Enable X11 session management
+  xsession = {
     enable = true;
     
     # Set up environment
@@ -28,6 +16,10 @@ in
       
       # Create Pictures directory for screenshots
       mkdir -p ~/Pictures
+      
+      # Set up environment for standalone systems
+      export XDG_SESSION_TYPE=x11
+      export XDG_CURRENT_DESKTOP=i3
     '';
 
     # i3 window manager configuration
@@ -37,7 +29,7 @@ in
       config = {
         # Basic settings
         modifier = "Mod4";  # Super key
-        terminal = apps.terminal;
+        terminal = "${pkgs.alacritty}/bin/alacritty";  # Fixed: use actual terminal
 
         # Window settings
         window = {
@@ -53,10 +45,10 @@ in
           mod = "Mod4";
         in {
           # Application launchers
-          "${mod}+Return" = "exec ${apps.terminal}";
+          "${mod}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";  # Fixed: use actual terminal
           "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
-          "${mod}+Shift+Return" = "exec ${apps.browser}";
-          "${mod}+e" = "exec ${apps.fileManager}";
+          "${mod}+Shift+Return" = "exec ${pkgs.firefox}/bin/firefox";  # Fixed: use actual browser
+          "${mod}+e" = "exec ${pkgs.nemo}/bin/nemo";  # Fixed: use actual file manager
 
           # Window management
           "${mod}+q" = "kill";
@@ -186,18 +178,31 @@ in
     };
   };
 
-  # X11-specific packages
-  home.packages = with pkgs; lib.optionals (!isCI) [
-    # X11-only packages
+  # X11-specific packages - Fixed: removed lib.optionals without condition
+  home.packages = with pkgs; [
     rofi 
     i3lock 
     scrot 
     libnotify 
     networkmanagerapplet
+    alacritty
+    firefox
+    nemo
+    pamixer
+    brightnessctl
+
+    # Additional X11 utilities for standalone systems
+    xorg.xhost
+    xorg.xauth
+    xorg.xinit
+    xclip
+    xsel
+    arandr  # Display configuration GUI
+    pavucontrol  # Audio control GUI
   ];
 
-  # Rofi only if i3 is enabled
-  programs.rofi = lib.mkIf (!isCI) {
+  # Rofi configuration - Fixed: removed lib.mkIf without condition
+  programs.rofi = {
     enable = true;
     theme = "Arc-Dark";
     extraConfig = {
