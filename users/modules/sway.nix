@@ -44,8 +44,7 @@
       # Keybindings
       keybindings = let 
         modifier = "Mod4";
-      in lib.mkOptionDefault {
-        
+      in {
         # Volume/brightness
         "XF86AudioMute" = "exec ${pkgs.pamixer}/bin/pamixer --toggle-mute";
         "XF86AudioLowerVolume" = "exec ${pkgs.pamixer}/bin/pamixer --decrease 5";
@@ -57,7 +56,7 @@
         "Ctrl+Mod1+l" = "exec ${pkgs.swaylock}/bin/swaylock -f -c 222222";
         "Shift+F12" = "exec ~/.bin/sway_screenshot.sh";
         
-        # Enhanced screenshots
+        # Screenshots
         "Print" = "exec ${pkgs.grim}/bin/grim ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && ${pkgs.libnotify}/bin/notify-send 'Screenshot saved'";
         "${modifier}+Print" = "exec ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && ${pkgs.libnotify}/bin/notify-send 'Area screenshot saved'";
         "${modifier}+Shift+Print" = "exec grim -g \"$(swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | \"\\(.x),\\(.y) \\(.width)x\\(.height)\"')\" ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Window screenshot saved'";
@@ -66,10 +65,65 @@
         "Ctrl+Print" = "exec ${pkgs.grim}/bin/grim - | wl-copy";
         "Ctrl+${modifier}+Print" = "exec ${pkgs.grim}/bin/grim -g \"$(slurp)\" - | wl-copy";
         
-        # Applications using env vars
+        # Applications
         "${modifier}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
         "${modifier}+Shift+f" = "exec ${pkgs.nemo}/bin/nemo";
         "${modifier}+Shift+b" = "exec ${pkgs.firefox}/bin/firefox";
+
+        # WORKSPACE KEYBINDINGS - EXPLICIT OVERRIDE
+        # Workspace switching
+        "${modifier}+1" = "workspace number 1";
+        "${modifier}+2" = "workspace number 2";
+        "${modifier}+3" = "workspace number 3";
+        "${modifier}+4" = "workspace number 4";
+        "${modifier}+5" = "workspace number 5";
+        "${modifier}+6" = "workspace number 6";
+        "${modifier}+7" = "workspace number 7";
+        "${modifier}+8" = "workspace number 8";
+        "${modifier}+9" = "workspace number 9";
+        "${modifier}+0" = "workspace number 10";
+
+        # Move container to workspace
+        "${modifier}+Shift+1" = "move container to workspace number 1";
+        "${modifier}+Shift+2" = "move container to workspace number 2";
+        "${modifier}+Shift+3" = "move container to workspace number 3";
+        "${modifier}+Shift+4" = "move container to workspace number 4";
+        "${modifier}+Shift+5" = "move container to workspace number 5";
+        "${modifier}+Shift+6" = "move container to workspace number 6";
+        "${modifier}+Shift+7" = "move container to workspace number 7";
+        "${modifier}+Shift+8" = "move container to workspace number 8";
+        "${modifier}+Shift+9" = "move container to workspace number 9";
+        "${modifier}+Shift+0" = "move container to workspace number 10";
+
+        # Window management
+        "${modifier}+q" = "kill";
+        "${modifier}+f" = "fullscreen toggle";
+        "${modifier}+Shift+space" = "floating toggle";
+        "${modifier}+space" = "focus mode_toggle";
+
+        # Focus movement (vim-like)
+        "${modifier}+h" = "focus left";
+        "${modifier}+j" = "focus down";
+        "${modifier}+k" = "focus up";
+        "${modifier}+l" = "focus right";
+
+        # Window movement
+        "${modifier}+Shift+h" = "move left";
+        "${modifier}+Shift+j" = "move down";
+        "${modifier}+Shift+k" = "move up";
+        "${modifier}+Shift+l" = "move right";
+
+        # Layout management
+        "${modifier}+s" = "layout stacking";
+        "${modifier}+w" = "layout tabbed";
+        "${modifier}+e" = "layout toggle split";
+        "${modifier}+v" = "split h";
+        "${modifier}+b" = "split v";
+
+        # Sway control
+        "${modifier}+Shift+c" = "reload";
+        "${modifier}+Shift+r" = "restart";
+        "${modifier}+Shift+e" = "exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'";
       };
       
       # Window rules
