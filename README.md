@@ -31,11 +31,17 @@ curl -L https://raw.githubusercontent.com/t3rp/nixos-config/main/bootstrap.sh | 
 ### Common Commands
 
 ```bash
-# Apply configuration changes
-home-manager switch -f users/common.nix
+# Test the build without switching
+sudo nixos-rebuild build --flake .#ares
 
-# Show what would change without applying
-home-manager build
+# Test the home-manager without switching
+home-manager build -f users/home.nix
+
+# Check configuration for errors
+home-manager build -f users/home.nix --dry-run
+
+# Apply configuration changes
+home-manager switch -f users/home.nix
 
 # List installed packages
 home-manager packages
@@ -48,9 +54,6 @@ home-manager rollback
 
 # Remove old generations (cleanup)
 home-manager expire-generations "-7 days"
-
-# Check configuration for errors
-home-manager build --dry-run
 ```
 
 ### Package Management

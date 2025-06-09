@@ -43,16 +43,12 @@ jobs:
         home-manager --version
         nix-channel --list | grep home-manager
         
-    - name: Set CI environment variable
+    - name: Test Home Manager configuration using flake
+      env:
+        USER: "runner"
       run: |
-        echo "CI=true" >> $GITHUB_ENV
-        
-    - name: Test Home Manager configuration
-      run: |
-        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
-        cd users
-        # Use backup flag to handle existing files
-        home-manager switch -f common.nix -b backup
+        # Use the CI-specific configuration
+        home-manager switch --flake .#auto@ci -b backup
         
     - name: Verify Nix packages are installed
       run: |
