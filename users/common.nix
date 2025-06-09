@@ -36,11 +36,6 @@ in
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
   imports = [
-    ./modules/general.nix
-    ./modules/tmux.nix
-    ./modules/shell.nix
-    ./modules/git.nix
-    ./modules/vscode.nix
   ] ++ lib.optionals isDarwin [
     # Darwin/macOS-specific
   ] ++ lib.optionals (isLinux && !isNixOS) [
@@ -97,7 +92,6 @@ in
   # Services that require D-Bus - disable on Darwin
   services = lib.mkIf isLinux {
     # Add any Linux-specific services here
-    # Enable SSH agent service
     ssh-agent = {
       enable = true;
     };

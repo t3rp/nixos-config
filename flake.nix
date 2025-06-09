@@ -30,7 +30,7 @@
 
     # Home Manager configurations for standalone use
     homeConfigurations = {
-      
+  
       # Linux
       "anon@linux" = let
         username = "anon";
@@ -43,29 +43,15 @@
         modules = [
           ./users/common.nix
           ./users/modules/i3.nix
-          ./users/modules/sway.nix
+          ./users/modules/general.nix
+          ./users/modules/tmux.nix
+          ./users/modules/shell.nix
+          ./users/modules/git.nix
+          ./users/modules/vscode.nix
           {
             targets.genericLinux.enable = true;
             home.username = username;
             home.homeDirectory = "/home/${username}";
-          }
-        ];
-      };
-
-      # macOS
-      "terp@mac" = let
-        username = "terp";
-        system = "x86_64-darwin"; # or "aarch64-darwin" for Apple Silicon
-      in home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
-        extraSpecialArgs = { 
-          inherit username system; 
-        };
-        modules = [
-          ./users/common.nix
-          {
-            home.username = username;
-            home.homeDirectory = "/Users/${username}";
           }
         ];
       };

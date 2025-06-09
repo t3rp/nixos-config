@@ -34,20 +34,7 @@ in
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      # Source Nix profiles
-      if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-        . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-      fi
-      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-      fi
-      
-      # Load bash functions
-      if [ -d "$HOME/.bash_functions" ]; then
-        for f in "$HOME/.bash_functions"/*.sh; do
-          [ -e "$f" ] && source "$f"
-        done
-      fi
+      # bashrcExtra from Home Manager (NIX)
     '';
     shellAliases = myShellAliases;
   };
@@ -59,22 +46,8 @@ in
     
     # CHANGED BACK: initContent -> initExtra for compatibility
     initExtra = ''
-      # Source Nix profile
-      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-      fi
-      if [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
-        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-      fi
-      
-      # Add custom bin directories to PATH
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.bin"
-      # Load bash functions (works in zsh too)
-      for f in $HOME/.bash_functions/*.sh; do
-        [ -e "$f" ] && source "$f"
-      done
+      # initExtra from Home Manager (NIX)
     '';
-    
     shellAliases = myShellAliases;
   };
 }
