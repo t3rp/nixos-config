@@ -11,9 +11,8 @@ let
   # Username detection
   username = builtins.getEnv "USER";
 
-  # Platform
+  # Platform detection
   isLinux = pkgs.stdenv.hostPlatform.isLinux;
-  isNixOS = config.targets.nixos.enable or false;
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   unsupported = builtins.abort "Unsupported platform";
 in
@@ -26,9 +25,11 @@ in
     ./modules/shell.nix
     ./modules/git.nix
     ./modules/vscode.nix
+    ./modules/sway.nix
+    ./modules/i3.nix
   ];
 
-  # Username and home directory - now dynamic
+  # Username and home directoryh
   home.username = username;
   home.homeDirectory =
     if isLinux then "/home/${username}" else
@@ -50,6 +51,9 @@ in
 
   # Allow unfree packages system-wide
   nixpkgs.config.allowUnfree = true;
+
+  # Disable fontconfig to avoid cache warnings
+  fonts.fontconfig.enable = false;
 
   # Nix configuration
   nix = {
