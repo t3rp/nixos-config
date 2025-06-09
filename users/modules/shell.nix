@@ -29,25 +29,64 @@ in
     };
   };
 
-  # Bash
+  # Bash with proper Home Manager integration
   programs.bash = {
     enable = true;
     enableCompletion = true;
+    
+    # Add to .bashrc
     bashrcExtra = ''
-      # bashrcExtra from Home Manager (NIX)
+      # Source Home Manager session variables
+      [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
     '';
+    
+    # Add to .bash_profile
+    profileExtra = ''
+      # Source Nix profile
+      [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      
+      # Source Home Manager session variables
+      [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+      
+      # Export XDG paths for desktop integration
+      export XDG_DATA_DIRS="$HOME/.nix-profile/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+      export XDG_CONFIG_DIRS="$HOME/.nix-profile/etc/xdg:''${XDG_CONFIG_DIRS:-/etc/xdg}"
+    '';
+    
     shellAliases = myShellAliases;
   };
 
-  # ZSH - REVERT: Use initExtra for older Home Manager versions
+  # ZSH with proper Home Manager integration
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     
-    # CHANGED BACK: initContent -> initExtra for compatibility
+    # Add to .zshrc
     initExtra = ''
-      # initExtra from Home Manager (NIX)
+      # Source Home Manager session variables
+      [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
     '';
+    
+    # Add to .zprofile (login shell)
+    # initExtra
+    profileExtra = ''
+      # Source Nix profile
+      [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      
+      # Source Home Manager session variables
+      [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
+        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+      
+      # Export XDG paths for desktop integration
+      export XDG_DATA_DIRS="$HOME/.nix-profile/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+      export XDG_CONFIG_DIRS="$HOME/.nix-profile/etc/xdg:''${XDG_CONFIG_DIRS:-/etc/xdg}"
+    '';
+    
     shellAliases = myShellAliases;
   };
 }

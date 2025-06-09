@@ -42,12 +42,6 @@
         };
         modules = [
           ./users/common.nix
-          ./users/modules/i3.nix
-          ./users/modules/general.nix
-          ./users/modules/tmux.nix
-          ./users/modules/shell.nix
-          ./users/modules/git.nix
-          ./users/modules/vscode.nix
           {
             targets.genericLinux.enable = true;
             home.username = username;

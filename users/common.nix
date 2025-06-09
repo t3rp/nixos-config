@@ -35,11 +35,18 @@ in
   
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
+  
   imports = [
+    ./modules/general.nix
+    ./modules/tmux.nix
+    ./modules/shell.nix
+    ./modules/git.nix
+    ./modules/vscode.nix
   ] ++ lib.optionals isDarwin [
     # Darwin/macOS-specific
   ] ++ lib.optionals (isLinux && !isNixOS) [
     # Standalone Linux systems (Debian, Ubuntu, Kali, etc.)
+    ./modules/i3.nix
   ] ++ lib.optionals isNixOS [
     # NixOS-specific integration
   ];
@@ -58,7 +65,7 @@ in
     executable = true;
   };
 
-  # Environment variables
+  # MERGED: Single sessionVariables definition
   home.sessionVariables = {
     NIXPKGS_ALLOW_UNFREE = "1";
   } // lib.optionalAttrs isLinux {
@@ -68,6 +75,19 @@ in
   } // lib.optionalAttrs isDarwin {
     # Darwin-specific environment variables if needed
     # HOMEBREW_NO_AUTO_UPDATE = "1";
+  };
+
+  # Desktop integration for GNOME/other DEs
+  targets.genericLinux.enable = lib.mkIf (isLinux && !isNixOS) true;
+  
+  # XDG integration - crucial for desktop environments
+  xdg = {
+    enable = true;
+    
+    # Ensure desktop files are properly linked
+    desktopEntries = lib.mkIf isLinux {
+      # This ensures .desktop files are created/linked properly
+    };
   };
 
   # GTK and icon theme - only enable on Linux
@@ -91,12 +111,10 @@ in
 
   # Services that require D-Bus - disable on Darwin
   services = lib.mkIf isLinux {
-    # Add any Linux-specific services here
     ssh-agent = {
       enable = true;
     };
   } // lib.optionalAttrs isDarwin {
-    # Enable SSH agent on macOS too
     ssh-agent = {
       enable = true;
     };
@@ -121,16 +139,6 @@ in
     '';
   };
 
-  # This value determines the home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update home Manager without changing this value. See
-  # the home Manager release notes for a list of state version
-  # changes in each release.
   home.stateVersion = "24.11";
-
-  # Let home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
