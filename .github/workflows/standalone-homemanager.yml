@@ -2,7 +2,7 @@ name: Home Manager Standalone
 
 on:
   push:
-    branches: [ main ]
+    branches: [ '*' ]
   pull_request:
     branches: [ main ]
 
@@ -46,8 +46,9 @@ jobs:
     - name: Test Home Manager configuration using flake
       env:
         USER: "runner"
+        CI: "true"  # Triggers conditional import exclusion
       run: |
-        # Use the CI-specific configuration
+        # Use auto@linux with CI detection
         home-manager switch --flake .#auto@ci -b backup
         
     - name: Verify Nix packages are installed
