@@ -2,7 +2,7 @@ name: Home Manager Standalone
 
 on:
   push:
-    branches: [ main ]
+    branches: [ '*' ]
   pull_request:
     branches: [ main ]
 
@@ -43,16 +43,13 @@ jobs:
         home-manager --version
         nix-channel --list | grep home-manager
         
-    - name: Set CI environment variable
+    - name: Test Home Manager configuration using flake
+      env:
+        USER: "runner"
+        CI: "true"  # Triggers conditional import exclusion
       run: |
-        echo "CI=true" >> $GITHUB_ENV
-        
-    - name: Test Home Manager configuration
-      run: |
-        export NIX_PATH=$HOME/.nix-defexpr/channels:$NIX_PATH
-        cd users
-        # Use backup flag to handle existing files
-        home-manager switch -f common.nix -b backup
+        # Use auto@linux with CI detection
+        home-manager switch --flake .#auto@ci -b backup
         
     - name: Verify Nix packages are installed
       run: |

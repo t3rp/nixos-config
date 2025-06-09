@@ -44,7 +44,7 @@ fi
 log "Applying Home Manager configuration..."
 cd "$config_dir/users"
 export NIX_PATH="${NIX_PATH:-}$HOME/.nix-defexpr/channels"
-home-manager switch -f common.nix -b backup
+home-manager switch -f home.nix -b backup
 
 # Setup shell integration
 shell_rc="$HOME/.$(basename "$SHELL")rc"
@@ -64,7 +64,7 @@ if [ "$(whoami)" != "terp" ]; then
     cat > "$HOME/.local/bin/homeswitch" << EOF
 #!/bin/bash
 export NIX_PATH="\${NIX_PATH:-}\$HOME/.nix-defexpr/channels"
-cd "$config_dir/users" && home-manager switch -f common.nix
+cd "$config_dir/users" && home-manager switch -f home.nix
 EOF
     chmod +x "$HOME/.local/bin/homeswitch"
     grep -q ".local/bin" "$shell_rc" || echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_rc"

@@ -1,7 +1,26 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Enable X11 session management
+  # Packages
+  home.packages = with pkgs; [
+    rofi 
+    i3lock 
+    scrot 
+    libnotify 
+    networkmanagerapplet
+    alacritty
+    firefox
+    nemo
+    pamixer
+    brightnessctl
+    xclip
+    xsel
+    arandr
+    pavucontrol 
+    rxvt-unicode  # Great i3 terminal
+  ];
+
+  # Session
   xsession = {
     enable = true;
     
@@ -22,16 +41,14 @@
       export XDG_CURRENT_DESKTOP=i3
     '';
 
-    # i3 window manager configuration
+    # i3
     windowManager.i3 = {
       enable = true;
 
       config = {
         # Basic settings
         modifier = "Mod4";  # Super key
-        terminal = "${pkgs.alacritty}/bin/alacritty";  # Fixed: use actual terminal
-
-        # Window settings
+        terminal = "${pkgs.rxvt-unicode}/bin/urxvt";  # Fixed: use actual terminal
         window = {
           border = 1;
           hideEdgeBorders = "smart";
@@ -45,7 +62,7 @@
           mod = "Mod4";
         in {
           # Application launchers
-          "${mod}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";  # Fixed: use actual terminal
+          "${mod}+Return" = "exec ${pkgs.rxvt-unicode}/bin/urxvt";  # Fixed: use actual terminal
           "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
           "${mod}+Shift+Return" = "exec ${pkgs.firefox}/bin/firefox";  # Fixed: use actual browser
           "${mod}+e" = "exec ${pkgs.nemo}/bin/nemo";  # Fixed: use actual file manager
@@ -178,29 +195,6 @@
     };
   };
 
-  # X11-specific packages - Fixed: removed lib.optionals without condition
-  home.packages = with pkgs; [
-    rofi 
-    i3lock 
-    scrot 
-    libnotify 
-    networkmanagerapplet
-    alacritty
-    firefox
-    nemo
-    pamixer
-    brightnessctl
-
-    # Additional X11 utilities for standalone systems
-    xorg.xhost
-    xorg.xauth
-    xorg.xinit
-    xclip
-    xsel
-    arandr  # Display configuration GUI
-    pavucontrol  # Audio control GUI
-  ];
-
   # Rofi configuration - Fixed: removed lib.mkIf without condition
   programs.rofi = {
     enable = true;
@@ -210,4 +204,14 @@
       drun-display-format = "{name}";
     };
   };
+
+  # Optional: Configure urxvt
+  home.file.".Xresources".text = ''
+    URxvt.font: xft:DejaVu Sans Mono:size=10
+    URxvt.background: #222222
+    URxvt.foreground: #ffffff
+    URxvt.scrollBar: false
+    URxvt.cursorBlink: true
+    URxvt.saveLines: 1000
+  '';
 }

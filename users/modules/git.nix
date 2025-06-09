@@ -7,7 +7,6 @@
 
 {
   # GitHub.com configuration for t3rp
-  # Split this into a module soon
   programs.git = {
     enable = true;
     userName = "t3rp";

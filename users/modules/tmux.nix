@@ -1,4 +1,8 @@
-{ config, pkgs, ... }:
+{ 
+  config, 
+  pkgs, 
+  ... 
+}:
 
 let
   tmuxConfigPath = "${config.home.homeDirectory}/.config/tmux/tmux.conf";

@@ -1,7 +1,6 @@
 {
   description = "NixOS Multi-host Configuration";
 
-  # Update flakes: nix flake update
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     home-manager = {
@@ -30,23 +29,27 @@
 
     # Home Manager configurations for standalone use
     homeConfigurations = {
-  
-      # Linux
-      "anon@linux" = let
-        username = "anon";
-        system = "x86_64-linux";
+      # Auto-detect current user
+      "auto@linux" = let
+        currentUser = builtins.getEnv "USER";
       in home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
-        extraSpecialArgs = { 
-          inherit username system; 
-        };
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        extraSpecialArgs = { username = currentUser; };
         modules = [
-          ./users/common.nix
-          {
-            targets.genericLinux.enable = true;
-            home.username = username;
-            home.homeDirectory = "/home/${username}";
-          }
+          ./users/home.nix
+          { targets.genericLinux.enable = true; }
+        ];
+      };
+
+      # Auto-detect current user ci
+      "auto@ci" = let
+        currentUser = builtins.getEnv "USER";
+      in home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        extraSpecialArgs = { username = currentUser; };
+        modules = [
+          ./users/home-ci.nix
+          { targets.genericLinux.enable = true; }
         ];
       };
     };
