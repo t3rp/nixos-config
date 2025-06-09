@@ -38,8 +38,6 @@ in
   
   # Allow unfree packages (for VSCode)
   nixpkgs.config.allowUnfree = true;
-
-  # Imports - conditionally import based on platform and system type
   imports = [
     ./modules/general.nix
     ./modules/tmux.nix

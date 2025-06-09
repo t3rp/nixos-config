@@ -22,7 +22,6 @@ in
       ms-vscode.makefile-tools
       golang.go
       rust-lang.rust-analyzer
-      jnoortheen.nix-ide
     ];
     userSettings = {
       "editor.rulers" = [ 80 120 ];
