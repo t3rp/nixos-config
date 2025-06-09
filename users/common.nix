@@ -15,9 +15,6 @@ let
   isDarwin = builtins.match ".*-darwin" actualSystem != null;
   isLinux = builtins.match ".*-linux" actualSystem != null;
   
-  # Detect if we're in a CI environment
-  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-  
   # Get home directory from environment (renamed to avoid conflicts)
   envHomeDirectory = builtins.getEnv "HOME";
   
@@ -78,8 +75,8 @@ in
     # HOMEBREW_NO_AUTO_UPDATE = "1";
   };
 
-  # GTK and icon theme - only enable on Linux and not in CI
-  gtk = lib.mkIf (isLinux && !isCI) {
+  # GTK and icon theme - only enable on Linux
+  gtk = lib.mkIf isLinux {
     enable = true;
     theme = {
       name = "Adwaita-dark";
@@ -91,14 +88,14 @@ in
     };
   };
 
-  # QT Adwaita Dark - only enable on Linux and not in CI
-  qt = lib.mkIf (isLinux && !isCI) {
+  # QT Adwaita Dark - only enable on Linux
+  qt = lib.mkIf isLinux {
     enable = true;
     platformTheme.name = "gtk";
   };
 
-  # Services that require D-Bus - disable in CI and on Darwin
-  services = lib.mkIf (isLinux && !isCI) {
+  # Services that require D-Bus - disable on Darwin
+  services = lib.mkIf isLinux {
     # Add any Linux-specific services here
     # Enable SSH agent service
     ssh-agent = {

@@ -42,7 +42,6 @@
         };
         modules = [
           ./users/common.nix
-          ./users/modules/gnome.nix
           ./users/modules/i3.nix
           ./users/modules/sway.nix
           {

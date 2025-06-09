@@ -5,13 +5,8 @@
   ... 
 }:
 
-let
-  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-in
-
 {
-  # Only enable VSCode if not in CI
-  programs.vscode = lib.mkIf (!isCI) {
+  programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
       ms-python.python

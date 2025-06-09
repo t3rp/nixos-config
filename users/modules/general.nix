@@ -5,12 +5,9 @@
   ... 
 }:
 
-let
-  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-in
 {
   # Shared desktop applications (work in both X11 and Wayland)
-  home.packages = with pkgs; lib.optionals (!isCI) [
+  home.packages = with pkgs; [
     alacritty # terminal emulator
     firefox # web browser
     feh # image viewer
@@ -31,7 +28,7 @@ in
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processor https://github.com/mikefarah/yq
-    eza # A modern replacement for ‘ls’
+    eza # A modern replacement for 'ls'
     fzf # A command-line fuzzy finder
     mtr # A network diagnostic tool
     iperf3 # A tool for active measurements of the maximum achievable bandwidth
@@ -79,12 +76,4 @@ in
     vlc # A video conferencing tool
     act # a tool to run GitHub Actions locally
   ];
-
-  # Shared application paths for consistent reference
-  home.sessionVariables = lib.mkIf (!isCI) {
-    TERMINAL = "${pkgs.alacritty}/bin/alacritty";
-    BROWSER = "${pkgs.firefox}/bin/firefox";
-    FILE_MANAGER = "${pkgs.nemo}/bin/nemo";
-    IMAGE_VIEWER = "${pkgs.feh}/bin/feh";
-  };
 }

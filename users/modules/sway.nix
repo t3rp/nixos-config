@@ -1,11 +1,8 @@
 { config, pkgs, lib, ... }:
 
-let
-  isCI = builtins.getEnv "CI" == "true" || builtins.getEnv "GITHUB_ACTIONS" == "true";
-in
 {
   # Wayland-specific packages only
-  home.packages = with pkgs; lib.optionals (!isCI) [
+  home.packages = with pkgs; [
     # Wayland-only packages
     waybar 
     swaylock 
@@ -18,8 +15,8 @@ in
     wf-recorder
   ];
 
-  # Only enable Sway if Wayland is available and not in CI
-  wayland.windowManager.sway = lib.mkIf (!isCI) {
+  # Enable Sway if Wayland is available
+  wayland.windowManager.sway = {
     enable = true;
     
     config = {
@@ -96,7 +93,7 @@ in
     '';
   };
 
-  programs.waybar = lib.mkIf (!isCI) {
+  programs.waybar = {
     enable = true;
     systemd.enable = true;
     
