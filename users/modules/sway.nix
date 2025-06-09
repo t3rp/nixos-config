@@ -14,7 +14,6 @@
 
   # Packages for Sway
   home.packages = with pkgs; [
-    # Wayland-only packages
     waybar 
     swaylock 
     swayidle 
@@ -39,11 +38,8 @@
     config = {
       # Basic settings
       modifier = "Mod4";  # Super key
-      terminal = "${pkgs.alacritty}/bin/alacritty";  # CHANGE: Use direct pat
-      menu = "${pkgs.wofi}/bin/wofi --show drun";    # CHANGE: Use direct path
-      
-      # Font
-      fonts.size = 9.0; 
+      terminal = "${pkgs.alacritty}/bin/alacritty";
+      menu = "${pkgs.wofi}/bin/wofi --show drun";
       
       # Keybindings
       keybindings = let 
@@ -59,7 +55,7 @@
         
         # Sway-specific
         "Ctrl+Mod1+l" = "exec ${pkgs.swaylock}/bin/swaylock -f -c 222222";
-        "Shift+F12" = "exec ~/.bin/sway_screenshot.sh";  # Add this
+        "Shift+F12" = "exec ~/.bin/sway_screenshot.sh";
         
         # Enhanced screenshots
         "Print" = "exec ${pkgs.grim}/bin/grim ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && ${pkgs.libnotify}/bin/notify-send 'Screenshot saved'";
@@ -131,7 +127,7 @@
       mainBar = {
         layer = "top";
         position = "top";
-        height = 30;  # Increased height for more modules
+        height = 30;
         
         # Expanded modules
         modules-left = [ "sway/workspaces" "sway/mode" ];
@@ -171,7 +167,7 @@
           };
         };
 
-        # Current mode (resize, etc.)
+        # Current mode
         "sway/mode" = {
           format = "<span style=\"italic\">{}</span>";
         };
@@ -283,12 +279,11 @@
           format = "Time: {:%a %b %d - %H:%M}";
           format-alt = "Date: {:%Y-%m-%d %H:%M:%S}";
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          on-click = "gnome-calendar";  # Optional calendar app
         };
       };
     };
     
-    # Enhanced styling (keeping your theme)
+    # Style
     style = ''
       * {
         font-family: "DejaVu Sans Mono", monospace;
