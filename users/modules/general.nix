@@ -8,6 +8,7 @@
 {
   # Shared desktop applications (work in both X11 and Wayland)
   home.packages = with pkgs; [
+    wireshark # packet analyzer
     alacritty # terminal emulator
     firefox # web browser
     feh # image viewer
