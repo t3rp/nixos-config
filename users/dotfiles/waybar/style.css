@@ -1,0 +1,64 @@
+* {
+  font-family: "DejaVu Sans Mono", monospace;
+  font-size: 11px;
+  border-radius: 0;
+}
+
+window#waybar {
+  background-color: #222222;
+  color: #ffffff;
+  border-bottom: 2px solid #444444;
+}
+
+#workspaces button {
+  padding: 0 8px;
+  background-color: transparent;
+  color: #ffffff;
+  border: none;
+}
+
+#workspaces button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#workspaces button.focused {
+  background-color: #444444;
+  color: #ffffff;
+}
+
+#workspaces button.urgent {
+  background-color: #eb4d4b;
+  color: #ffffff;
+}
+
+#mode, #window, #pulseaudio, #network, #battery, #backlight,
+#memory, #cpu, #temperature, #disk, #tray, #clock {
+  padding: 0 8px;
+  color: #ffffff;
+}
+
+#pulseaudio { color: #74b9ff; }
+#pulseaudio.muted { color: #636e72; }
+#network { color: #00b894; }
+#network.disconnected { color: #e17055; }
+#battery { color: #a29bfe; }
+#battery.charging, #battery.plugged { color: #00b894; }
+#backlight { color: #ffeaa7; }
+#memory { color: #fd79a8; }
+#cpu { color: #fdcb6e; }
+#temperature { color: #e84393; }
+#disk { color: #55a3ff; }
+#clock { color: #ffffff; font-weight: bold; }
+
+#battery.critical:not(.charging) {
+  background-color: #e17055;
+  color: #ffffff;
+  animation: blink 0.5s linear infinite alternate;
+}
+
+@keyframes blink {
+  to {
+      background-color: #ffffff;
+      color: #000000;
+  }
+}
