@@ -31,20 +31,9 @@
       mhutchie.git-graph
       eamodio.gitlens
 
-      # Productivity
-      ms-vscode-remote.remote-ssh
-      ms-vscode.live-server
-      formulahendry.code-runner
-
       # Themes & UI
       pkief.material-icon-theme
-      dracula-theme.theme-dracula
       zhuangtongfa.material-theme
-      enkia.tokyo-night
-
-      # Utilities
-      ms-vsliveshare.vsliveshare
-      streetsidesoftware.code-spell-checker
     ];
 
     userSettings = {
@@ -59,68 +48,15 @@
       "editor.bracketPairColorization.enabled" = true;
       "editor.guides.bracketPairs" = true;
       "editor.cursorBlinking" = "smooth";
-      "editor.fontFamily" = "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace";
       "editor.fontLigatures" = true;
       "editor.fontSize" = 14;
       "editor.lineHeight" = 1.5;
 
-      # File Settings
-      "files.autoSave" = "afterDelay";
-      "files.autoSaveDelay" = 1000;
-      "files.trimTrailingWhitespace" = true;
-      "files.insertFinalNewline" = true;
-      "files.trimFinalNewlines" = true;
-
       # Workbench Settings
-      "workbench.colorTheme" = "Tokyo Night";
+      "workbench.colorTheme" = "Material Theme Darker High Contrast";
       "workbench.iconTheme" = "material-icon-theme";
       "workbench.startupEditor" = "none";
-      "workbench.editor.enablePreview" = false;
       "workbench.tree.indent" = 20;
-
-      # Terminal Settings
-      "terminal.integrated.fontFamily" = "'JetBrains Mono', monospace";
-      "terminal.integrated.fontSize" = 14;
-      "terminal.integrated.shell.linux" = "${pkgs.zsh}/bin/zsh";
-
-      # Git Settings
-      "git.enableSmartCommit" = true;
-      "git.confirmSync" = false;
-      "git.autofetch" = true;
-
-      # Language-specific Settings
-      "[nix]" = {
-        "editor.tabSize" = 2;
-        "editor.insertSpaces" = true;
-      };
-      "[python]" = {
-        "editor.formatOnSave" = true;
-        "editor.codeActionsOnSave" = {
-          "source.organizeImports" = true;
-        };
-      };
-      "[javascript]" = {
-        "editor.formatOnSave" = true;
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
-      "[typescript]" = {
-        "editor.formatOnSave" = true;
-        "editor.defaultFormatter" = "esbenp.prettier-vscode";
-      };
-
-      # Search Settings
-      "search.exclude" = {
-        "**/node_modules" = true;
-        "**/bower_components" = true;
-        "**/.git" = true;
-        "**/result" = true;
-        "**/target" = true;
-      };
-
-      # Explorer Settings
-      "explorer.confirmDelete" = false;
-      "explorer.confirmDragAndDrop" = false;
-      "explorer.compactFolders" = false;
 
       # Security & Telemetry
       "telemetry.telemetryLevel" = "off";

@@ -1,12 +1,20 @@
-{ 
+{
   config,
   pkgs,
   lib,
   username ? "terp",
-  ... 
+  ...
 }:
 
 {
+  # Packages
+  home.packages = with pkgs; [
+    nerdfonts
+    font-awesome
+    material-design-icons
+    material-symbols
+  ];
+
   # NixOS-specific imports (Sway for NixOS)
   imports = [
     ./modules/general.nix
@@ -46,6 +54,9 @@
       experimental-features = nix-command flakes
     '';
   };
+
+  # Font configuration
+  fonts.fontconfig.enable = true;
 
   # Home Manager configuration
   home.stateVersion = "24.11";
