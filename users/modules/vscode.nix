@@ -22,7 +22,7 @@
       esbenp.prettier-vscode
 
       # Configuration & Markup
-      bbenoist.nix
+      jnoortheen.nix-ide
       redhat.vscode-yaml
       ms-vscode.cmake-tools
       ms-vscode.makefile-tools
@@ -72,7 +72,7 @@
       "files.trimFinalNewlines" = true;
 
       # Workbench Settings
-      "workbench.colorTheme" = "One Dark Pro";
+      "workbench.colorTheme" = "Tokyo Night";
       "workbench.iconTheme" = "material-icon-theme";
       "workbench.startupEditor" = "none";
       "workbench.editor.enablePreview" = false;
