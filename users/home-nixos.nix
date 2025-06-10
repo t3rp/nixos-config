@@ -1,39 +1,35 @@
-{
+{ 
   config,
   pkgs,
   lib,
-  ...
+  username ? "terp",
+  ... 
 }:
 
-let
-  username = builtins.getEnv "USER";
-  isLinux = pkgs.stdenv.hostPlatform.isLinux;
-  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  unsupported = builtins.abort "Unsupported platform";
-in
-
 {
-  # Minimal imports for CI testing
+  # NixOS-specific imports (Sway for NixOS)
   imports = [
     ./modules/general.nix
     ./modules/tmux.nix
     ./modules/shell.nix
     ./modules/git.nix
+    ./modules/vscode.nix
+    ./modules/sway.nix
+    ./modules/mako.nix
   ];
 
-  # Username and home directory
+  # Fixed username for NixOS
   home.username = username;
-  home.homeDirectory =
-    if isLinux then "/home/${username}" else
-    if isDarwin then "/Users/${username}" else unsupported;
+  home.homeDirectory = "/home/${username}";
 
-  # Essential files only
+  # Link script files
   home.file.".bin" = {
     source = ./scripts;
     recursive = true;
     executable = true;
   };
 
+  # Link function files
   home.file.".bash_functions" = {
     source = ./functions;
     recursive = true;
