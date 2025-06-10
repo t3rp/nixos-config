@@ -4,12 +4,17 @@
   config,
   pkgs,
   lib,
+  username ? null,
   ... 
 }:
 
 let
-  # Username detection
-  username = builtins.getEnv "USER";
+  # Username detection with fallback chain
+  detectedUsername =
+    if username != null then username
+    else if (builtins.getEnv "USER") != "" then (builtins.getEnv "USER")
+    else if (builtins.getEnv "LOGNAME") != "" then (builtins.getEnv "LOGNAME")
+    else builtins.abort "Username could not be determined. Please set USER environment variable or pass username explicitly.";
 
   # Platform detection
   isLinux = pkgs.stdenv.hostPlatform.isLinux;
@@ -29,11 +34,11 @@ in
     ./modules/i3.nix
   ];
 
-  # Username and home directoryh
-  home.username = username;
+  # Username and home directory
+  home.username = detectedUsername;
   home.homeDirectory =
-    if isLinux then "/home/${username}" else
-    if isDarwin then "/Users/${username}" else unsupported;
+    if isLinux then "/home/${detectedUsername}" else
+    if isDarwin then "/Users/${detectedUsername}" else unsupported;
 
   # Link script files
   home.file.".bin" = {

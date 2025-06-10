@@ -29,27 +29,44 @@
 
     # Home Manager configurations for standalone use
     homeConfigurations = {
-      # Auto-detect current user
+      # Generic configuration that auto-detects username
       "auto@linux" = let
-        currentUser = builtins.getEnv "USER";
+        currentUser = let
+          envUser = builtins.getEnv "USER";
+          envLogname = builtins.getEnv "LOGNAME";
+        in
+          if envUser != "" then envUser
+          else if envLogname != "" then envLogname
+          else "anon";  # fallback to anon
       in home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { username = currentUser; };
         modules = [
           ./users/home.nix
           { targets.genericLinux.enable = true; }
+          # Pass username as module argument
+          { config._module.args.username = currentUser; }
         ];
       };
 
-      # Auto-detect current user ci
-      "auto@ci" = let
-        currentUser = builtins.getEnv "USER";
-      in home-manager.lib.homeManagerConfiguration {
+      # Specific configuration for Kali
+      "anon@kali" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { username = currentUser; };
+        modules = [
+          ./users/home.nix
+          { targets.genericLinux.enable = true; }
+          # Explicitly pass username
+          { config._module.args.username = "anon"; }
+        ];
+      };
+
+      # CI configuration
+      "auto@ci" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./users/home-ci.nix
           { targets.genericLinux.enable = true; }
+          # Pass username for CI
+          { config._module.args.username = builtins.getEnv "USER"; }
         ];
       };
     };
