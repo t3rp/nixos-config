@@ -17,7 +17,7 @@
     xsel
     arandr
     pavucontrol 
-    rxvt-unicode  # Great i3 terminal
+    rxvt-unicode
   ];
 
   # Session
@@ -69,6 +69,7 @@
 
           # Window management
           "${mod}+q" = "kill";
+          "${mod}+Shift+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+Shift+space" = "floating toggle";
           "${mod}+space" = "focus mode_toggle";
