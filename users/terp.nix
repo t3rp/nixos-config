@@ -38,19 +38,11 @@
   home.username = "terp";
   home.homeDirectory = "/home/terp";
 
-  # Link script files
-  home.file.".bin" = {
-    source = ./scripts;
-    recursive = true;
-    executable = true;
-  };
-
-  # Link function files
-  home.file.".bash_functions" = {
-    source = ./functions;
-    recursive = true;
-    executable = true;
-  };
+  # Multiple scripts
+  (writeShellScriptBin "nixos-search" (builtins.readFile ./functions/nixos-0search.sh))
+  (writeShellScriptBin "nixos-update" (builtins.readFile ./scripts/nixos-update.sh))
+  (writeShellScriptBin "sway-screenshot" (builtins.readFile ./scripts/sway-screenshot.sh))
+  (writeShellScriptBin "tmux-logging" (builtins.readFile ./scripts/tmux-logging.sh))
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
