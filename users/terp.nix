@@ -9,7 +9,7 @@
   # Packages
   home.packages = with pkgs; [
     # Comprehensive font packages for icon support
-    (nerdfonts.override { 
+    (nerdfonts.override {
       fonts = [ 
         "FiraCode" 
         "FiraMono"
@@ -20,6 +20,13 @@
     material-symbols
     fontconfig
     liberation_ttf
+
+    # Multiple scripts
+    (writeShellScriptBin "sway-tree" (builtins.readFile ./scripts/sway-tree.sh))
+    (writeShellScriptBin "nixos-update" (builtins.readFile ./scripts/nixos-update.sh))
+    (writeShellScriptBin "nixos-deploy" (builtins.readFile ./scripts/nixos-deploy.sh))
+    (writeShellScriptBin "sway-screenshot" (builtins.readFile ./scripts/sway-screenshot.sh))
+    (writeShellScriptBin "tmux-logging" (builtins.readFile ./scripts/tmux-logging.sh))
   ];
 
   # NixOS-specific imports (Sway for NixOS)
@@ -31,21 +38,15 @@
     ./modules/vscode.nix
     ./modules/sway.nix
     ./modules/mako.nix
+    ./modules/darkness.nix
   ];
 
   # Fixed username for NixOS
   home.username = "terp";
   home.homeDirectory = "/home/terp";
 
-  # Link script files
-  home.file.".bin" = {
-    source = ./scripts;
-    recursive = true;
-    executable = true;
-  };
-
-  # Link function files
-  home.file.".bash_functions" = {
+  # ZSH functions  
+  home.file.".zsh_functions" = {
     source = ./functions;
     recursive = true;
     executable = true;

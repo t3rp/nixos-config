@@ -85,9 +85,9 @@ in
       bind r source-file ${tmuxConfigPath} \; display-message "Config reloaded..."
 
       # Automatic, don't log big stuff like btop
-      set-hook -g session-created 'run ~/.bin/tmux_logging.sh'
-      set-hook -g after-new-window 'run ~/.bin/tmux_logging.sh' 
-      set-hook -g after-split-window 'run ~/.bin/tmux_logging.sh'
+      set-hook -g session-created 'run tmux-logging.sh'
+      set-hook -g after-new-window 'run tmux-logging.sh' 
+      set-hook -g after-split-window 'run tmux-logging.sh'
     '';
   };
 }
