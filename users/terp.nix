@@ -8,10 +8,13 @@
 {
   # Packages
   home.packages = with pkgs; [
-    nerdfonts
+    # Testing nerd font patching
+    (nerdfonts.override { fonts = [ "DejaVuSansMono" "FiraCode" "JetBrainsMono" ]; })
     font-awesome
     material-design-icons
     material-symbols
+    fontconfig
+    liberation_ttf
   ];
 
   # NixOS-specific imports (Sway for NixOS)
@@ -45,14 +48,6 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # Nix configuration
-  nix = {
-    package = pkgs.nixVersions.stable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
 
   # Font configuration
   fonts.fontconfig.enable = true;

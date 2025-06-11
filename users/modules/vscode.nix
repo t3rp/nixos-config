@@ -51,6 +51,10 @@
       "editor.fontLigatures" = true;
       "editor.fontSize" = 14;
       "editor.lineHeight" = 1.5;
+      
+      # Fix font for icon support
+      "editor.fontFamily" = "'DejaVu Sans Mono', 'Nerd Font Mono', 'Font Awesome 6 Free', monospace";
+      "terminal.integrated.fontFamily" = "'DejaVu Sans Mono', 'Nerd Font Mono', 'Font Awesome 6 Free', monospace";
 
       # Workbench Settings
       "workbench.colorTheme" = "Material Theme Darker High Contrast";
@@ -62,14 +66,6 @@
       "telemetry.telemetryLevel" = "off";
       "update.mode" = "none";
       "extensions.autoUpdate" = false;
-
-      # Performance
-      "files.watcherExclude" = {
-        "**/.git/objects/**" = true;
-        "**/.git/subtree-cache/**" = true;
-        "**/node_modules/**" = true;
-        "**/result/**" = true;
-      };
     };
 
     keybindings = [
