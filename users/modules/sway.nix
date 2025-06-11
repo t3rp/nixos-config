@@ -6,7 +6,6 @@
 }:
 
 {
-  # Just install packages - don't manage configs
   home.packages = with pkgs; [
     # Wayland/Sway core
     sway
@@ -26,10 +25,9 @@
     pavucontrol
     networkmanagerapplet
     libnotify
-    btop
     ncdu
-    jq  # For screenshot scripts
-    feh # Image viewer
+    jq
+    feh
   ];
 
   # Copy Sway and Waybar configs
