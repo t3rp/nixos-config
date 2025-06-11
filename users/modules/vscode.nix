@@ -31,6 +31,11 @@
       mhutchie.git-graph
       eamodio.gitlens
 
+      # Docker & Container Support
+      ms-vscode-remote.remote-containers
+      ms-azuretools.vscode-docker
+      ms-vscode-remote.remote-ssh
+
       # Themes & UI
       pkief.material-icon-theme
       zhuangtongfa.material-theme
