@@ -31,6 +31,7 @@
     ./modules/vscode.nix
     ./modules/sway.nix
     ./modules/mako.nix
+    ./modules/darkness.nix
   ];
 
   # Fixed username for NixOS
