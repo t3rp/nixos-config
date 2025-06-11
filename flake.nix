@@ -9,10 +9,10 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, ... }: {
     nixosConfigurations = {
-      
-      # Workstation ARES with integrated Home Manager
+
+      # === ARES ===
       ares = let
         username = "terp";
         specialArgs = {inherit username;};
@@ -33,9 +33,8 @@
       # NixOS user (for standalone use)
       "terp@nixos" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { username = "terp"; };
         modules = [
-          ./users/home-nixos.nix
+          ./users/terp.nix
         ];
       };
 
@@ -46,17 +45,7 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         extraSpecialArgs = { username = currentUser; };
         modules = [
-          ./users/home-linux.nix
-          { targets.genericLinux.enable = true; }
-        ];
-      };
-
-      # CI configuration
-      "auto@ci" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { username = "runner"; };
-        modules = [
-          ./users/home-ci.nix
+          ./users/anon.nix
           { targets.genericLinux.enable = true; }
         ];
       };
