@@ -107,6 +107,8 @@ bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym Print exec grim ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Screenshot saved'
 bindsym $mod+Print exec grim -g "$(slurp)" ~/Pictures/screenshot_$(date +%Y%m%d_%H%M%S).png && notify-send 'Area screenshot saved'
 bindsym Ctrl+Print exec grim - | wl-copy && notify-send 'Screenshot copied to clipboard'
+# Sway screenshot script, managed by home-manager
+bindsym Shift+F12 exec sway-screenshot
 
 # Lock screen
 bindsym Ctrl+Alt+l exec swaylock -f -c 222222
