@@ -8,9 +8,14 @@
 {
   # Packages
   home.packages = with pkgs; [
-    # Testing nerd font patching
-    (nerdfonts.override { fonts = [ "DejaVuSansMono" "FiraCode" "JetBrainsMono" ]; })
-    font-awesome
+    # Comprehensive font packages for icon support
+    (nerdfonts.override { 
+      fonts = [ 
+        "FiraCode" 
+        "FiraMono"
+      ]; 
+    })
+    font-awesome_6
     material-design-icons
     material-symbols
     fontconfig

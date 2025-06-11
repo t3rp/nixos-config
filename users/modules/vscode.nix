@@ -52,9 +52,12 @@
       "editor.fontSize" = 14;
       "editor.lineHeight" = 1.5;
       
-      # Fix font for icon support
-      "editor.fontFamily" = "'DejaVu Sans Mono', 'Nerd Font Mono', 'Font Awesome 6 Free', monospace";
-      "terminal.integrated.fontFamily" = "'DejaVu Sans Mono', 'Nerd Font Mono', 'Font Awesome 6 Free', monospace";
+      # Fix fonts and icons
+      "editor.fontFamily" = "'FiraCode Nerd Font', 'FiraMono Nerd Font', 'FontAwesome 6 Free'";
+      "terminal.integrated.fontFamily" = "'FiraCode Nerd Font', 'FiraMono Nerd Font', 'FontAwesome 6 Free'";
+      
+      # Enable font ligatures for better icon rendering
+      "terminal.integrated.fontLigatures" = true;
 
       # Workbench Settings
       "workbench.colorTheme" = "Material Theme Darker High Contrast";
