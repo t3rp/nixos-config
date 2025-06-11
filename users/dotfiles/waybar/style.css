@@ -18,8 +18,8 @@ window#waybar {
 }
 
 #workspaces button:hover {
-  background-color: #333333;
-  color: #222222;
+  background-color: #111111;
+  color: #ffffff;
 }
 
 #workspaces button.focused {
