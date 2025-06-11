@@ -9,8 +9,8 @@
   # Packages
   home.packages = with pkgs; [
     adwaita-qt
-    gnome.gnome-themes-extra
-    gnome.adwaita-icon-theme
+    gnome-themes-extra
+    adwaita-icon-theme
   ];
 
   # GTK dark 
@@ -18,15 +18,15 @@
     enable = true;
     theme = {
       name = "Adwaita-dark";
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
     };
     iconTheme = {
       name = "Adwaita";
-      package = pkgs.gnome.adwaita-icon-theme;
+      package = pkgs.adwaita-icon-theme;
     };
     cursorTheme = {
       name = "Adwaita";
-      package = pkgs.gnome.adwaita-icon-theme;
+      package = pkgs.adwaita-icon-theme;
     };
   };
 
