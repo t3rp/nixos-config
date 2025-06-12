@@ -39,6 +39,7 @@
     ./modules/sway.nix
     ./modules/mako.nix
     ./modules/darkness.nix
+    ./modules/cloud.nix
   ];
 
   # Fixed username for NixOS
