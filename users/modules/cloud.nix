@@ -11,8 +11,5 @@
     awscli2
     azure-cli
     google-cloud-sdk
-    terraform
-    kubectl
-    helm
   ];
 }
