@@ -14,7 +14,7 @@ let
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake ${configPath}#$(hostname)";
-    homeswitch = "cd ${configPath}/users && home-manager switch -f home.nix";
+    nixhomeswitch = "cd ${configPath}/users && home-manager switch --flake .#terp@nixos";
     nixfull = "nixswitch && homeswitch";
   };
 in
