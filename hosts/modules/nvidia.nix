@@ -8,25 +8,29 @@
     # Blacklist nouveau kernel module
     boot.blacklistedKernelModules = [ "nouveau" ];
    
-    # OpenGL, newer way but fails to load clinfo for some reason
-    # hardware.graphics = {
-    #     enable = true;
-    #     extraPackages = with pkgs; [
-    #         nvidia-vaapi-driver
-    #         clinfo
-    #         cudatoolkit
-    #     ];
-    # };
-    
-    # eprecated, but needed for hashcat on 24.11
-    hardware.opengl = {
+    # Newer method here, commented out old
+    # https://wiki.nixos.org/wiki/Graphics -> move to hardware.graphics in 24.11
+    # https://wiki.nixos.org/wiki/NVIDIA -> nvidia
+    # https://wiki.nixos.org/wiki/CUDA -> cuda
+    hardware.graphics = {
         enable = true;
         extraPackages = with pkgs; [
             nvidia-vaapi-driver
-            cudatoolkit
             clinfo
+            cudatoolkit
         ];
     };
+    
+    # Deprecated, but needed for hashcat on 24.11
+    # hardware.opengl = {
+    #     enable = true;
+    #     extraPackages = with pkgs; [
+    #         nvidia-vaapi-driver
+    #         cudatoolkit
+    #         clinfo
+    #         ocl-icd
+    #     ];
+    # };
 
     # Ensure CUDA is available in environment
     environment.variables = {
