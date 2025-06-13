@@ -122,7 +122,8 @@
   users.users.${username} = {
     isNormalUser = true;
     description = "${username}";
-    extraGroups = [ "networkmanager" "wheel" "vboxusers" "libvirtd" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "vboxusers" "libvirtd" "docker" "video"];
+    # May need video for nvidia and hashcat
     # Specific programs for this system + user
     packages = with pkgs; [
     virt-manager # virtual machine manager
@@ -150,7 +151,6 @@
     alacritty # terminal emulator
     greetd.tuigreet # terminal greeter
     xdg-desktop-portal-wlr # portal for wayland
-    hashcat # hashcat
     cudatoolkit # CUDA toolkit
     pwvucontrol # pwv control audio control
     helvum # helvum audio mixer

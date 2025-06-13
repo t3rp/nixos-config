@@ -1,16 +1,37 @@
-{ config, pkgs, ... }:
+{ 
+    config, 
+    pkgs, 
+    ... 
+}:
 
 {
     # Blacklist nouveau kernel module
     boot.blacklistedKernelModules = [ "nouveau" ];
    
-    # OpenGL
-    hardware.graphics = {
+    # OpenGL, newer way but fails to load clinfo for some reason
+    # hardware.graphics = {
+    #     enable = true;
+    #     extraPackages = with pkgs; [
+    #         nvidia-vaapi-driver
+    #         clinfo
+    #         cudatoolkit
+    #     ];
+    # };
+    
+    # eprecated, but needed for hashcat on 24.11
+    hardware.opengl = {
         enable = true;
         extraPackages = with pkgs; [
-            nvidia-vaapi-driver # VAAPI support for Nvidia GPUs
-            ocl-icd # OpenCL ICD loader
+            nvidia-vaapi-driver
+            cudatoolkit
+            clinfo
         ];
+    };
+
+    # Ensure CUDA is available in environment
+    environment.variables = {
+        CUDA_PATH = "${pkgs.cudatoolkit}";
+        CUDA_ROOT = "${pkgs.cudatoolkit}";
     };
 
     # Load nvidia driver for Xorg and Wayland
