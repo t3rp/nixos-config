@@ -1,4 +1,8 @@
-{ config, pkgs, ... }:
+{ 
+    config, 
+    pkgs, 
+    ... 
+}:
 
 {
     # Blacklist nouveau kernel module
