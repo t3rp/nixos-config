@@ -13,8 +13,6 @@
         enable = true;
         extraPackages = with pkgs; [
             nvidia-vaapi-driver
-            ocl-icd
-            opencl-headers
             clinfo
             cudatoolkit
         ];
