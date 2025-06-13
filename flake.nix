@@ -24,6 +24,7 @@
           ./hosts/modules/sway.nix
           ./hosts/modules/nvidia.nix
           ./hosts/modules/libvirtd.nix
+          ./hosts/modules/hashcat.nix
         ];
       };
     };

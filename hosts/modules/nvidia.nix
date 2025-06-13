@@ -1,4 +1,8 @@
-{ config, pkgs, ... }:
+{ 
+    config, 
+    pkgs, 
+    ... 
+}:
 
 {
     # Blacklist nouveau kernel module
@@ -8,9 +12,18 @@
     hardware.graphics = {
         enable = true;
         extraPackages = with pkgs; [
-            nvidia-vaapi-driver # VAAPI support for Nvidia GPUs
-            ocl-icd # OpenCL ICD loader
+            nvidia-vaapi-driver
+            ocl-icd
+            opencl-headers
+            clinfo
+            cudatoolkit
         ];
+    };
+
+    # Ensure CUDA is available in environment
+    environment.variables = {
+        CUDA_PATH = "${pkgs.cudatoolkit}";
+        CUDA_ROOT = "${pkgs.cudatoolkit}";
     };
 
     # Load nvidia driver for Xorg and Wayland
