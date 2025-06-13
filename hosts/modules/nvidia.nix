@@ -14,7 +14,6 @@
         extraPackages = with pkgs; [
             nvidia-vaapi-driver
             ocl-icd
-            intel-ocl
             opencl-headers
             clinfo
             cudatoolkit
