@@ -33,6 +33,7 @@
     ./modules/mako.nix
     ./modules/darkness.nix
     ./modules/cloud.nix
+    ./modules/i3.nix
   ];
 
   # Linux
