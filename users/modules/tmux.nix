@@ -85,12 +85,12 @@ in
       bind r source-file ${tmuxConfigPath} \; display-message "Config reloaded..."
 
       # Automatic, don't log big stuff like btop
-      set-hook -g session-created 'run tmux-logging.sh'
-      set-hook -g after-new-window 'run tmux-logging.sh' 
-      set-hook -g after-split-window 'run tmux-logging.sh'
+      set-hook -g session-created 'run tmux-logging'
+      set-hook -g after-new-window 'run tmux-logging' 
+      set-hook -g after-split-window 'run tmux-logging'
 
       # Bind Prefix+l to run zsh-logging.sh and show a status message
-      bind l run-shell "${config.home.homeDirectory}/.config/scripts/zsh-logging.sh; tmux display-message 'CSV Logging Started..."
+      bind l send-keys 'source ${config.home.homeDirectory}/.config/scripts/zsh-logging.sh; tmux display-message "CSV Logging Started..."' C-m
     '';
   };
 }
