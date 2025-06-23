@@ -40,6 +40,9 @@ home-manager build -f users/home.nix
 # Check configuration for errors
 home-manager build -f users/home.nix --dry-run
 
+# Run standalone home manager with experimental features
+home-manager switch --flake .#anon@linux --extra-experimental-features "nix-command flakes"
+
 # Apply configuration changes
 home-manager switch -f users/home.nix
 

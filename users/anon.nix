@@ -1,71 +1,62 @@
 # Home manager configuration
-
-{ 
+{
   config,
   pkgs,
   lib,
-  username ? null,
-  ... 
+  ...
 }:
 
-let
-  # Username detection with fallback chain
-  detectedUsername =
-    if username != null then username
-    else if (builtins.getEnv "USER") != "" then (builtins.getEnv "USER")
-    else if (builtins.getEnv "LOGNAME") != "" then (builtins.getEnv "LOGNAME")
-    else builtins.abort "Username could not be determined. Please set USER environment variable or pass username explicitly.";
-
-  # Platform detection
-  isLinux = pkgs.stdenv.hostPlatform.isLinux;
-  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  unsupported = builtins.abort "Unsupported platform";
-in
-
 {
-  # Imports
+  # Packages
+  home.packages = with pkgs; [
+    # Comprehensive font packages for icon support
+    (nerdfonts.override {
+      fonts = [
+        "FiraCode"
+        "FiraMono"
+      ];
+    })
+    font-awesome_6
+    material-design-icons
+    material-symbols
+    fontconfig
+    liberation_ttf
+  ];
+
+  # NixOS-specific imports (Sway for NixOS)
   imports = [
     ./modules/general.nix
     ./modules/tmux.nix
     ./modules/shell.nix
     ./modules/git.nix
     ./modules/vscode.nix
-    ./modules/sway.nix
+    ./modules/mako.nix
+    ./modules/darkness.nix
+    ./modules/cloud.nix
     ./modules/i3.nix
   ];
 
-  # Username and home directory
-  home.username = detectedUsername;
-  home.homeDirectory =
-    if isLinux then "/home/${detectedUsername}" else
-    if isDarwin then "/Users/${detectedUsername}" else unsupported;
+  # Linux
+  home.username = "anon";
+  home.homeDirectory = "/home/anon";
 
-  # Link script files
-  home.file.".bin" = {
-    source = ./scripts;
-    recursive = true;
-    executable = true;
-  };
-
-  # Link function files
-  home.file.".bash_functions" = {
+  # ZSH functions
+  home.file.".zsh_functions" = {
     source = ./functions;
     recursive = true;
     executable = true;
   };
 
-  # Allow unfree packages system-wide
+  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Disable fontconfig to avoid cache warnings
-  fonts.fontconfig.enable = false;
+  # Font configuration
+  fonts.fontconfig.enable = true;
 
-  # Nix configuration
+  # Enable Nix package manager
   nix = {
-    package = pkgs.nixVersions.stable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    package = pkgs.nix;
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
 
   # Home Manager configuration
