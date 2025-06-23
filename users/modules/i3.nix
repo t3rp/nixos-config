@@ -48,7 +48,6 @@
       config = {
         # Basic settings
         modifier = "Mod4";  # Super key
-        # terminal = "${pkgs.rxvt-unicode}/bin/urxvt";
         window = {
           border = 1;
           hideEdgeBorders = "smart";
@@ -62,7 +61,8 @@
           mod = "Mod4";
         in {
           # Application launchers
-          "${mod}+Return" = "exec ${pkgs.rxvt-unicode}/bin/urxvt";
+          # "${mod}+Return" = "exec ${pkgs.rxvt-unicode}/bin/urxvt";
+          "${mod}+Return = "exec ${pkgs.alacritty}/bin/alacritty";
           "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
           "${mod}+Shift+Return" = "exec ${pkgs.firefox}/bin/firefox";
           "${mod}+e" = "exec ${pkgs.nemo}/bin/nemo";
