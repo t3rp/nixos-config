@@ -21,11 +21,6 @@
     material-symbols
     fontconfig
     liberation_ttf
-
-    # Source scripts
-    (writeShellScriptBin "sway-tree" (builtins.readFile ./scripts/sway-tree.sh))
-    (writeShellScriptBin "sway-screenshot" (builtins.readFile ./scripts/sway-screenshot.sh))
-    (writeShellScriptBin "tmux-logging" (builtins.readFile ./scripts/tmux-logging.sh))
   ];
 
   # NixOS-specific imports (Sway for NixOS)
