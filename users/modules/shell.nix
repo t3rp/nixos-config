@@ -3,7 +3,6 @@
   pkgs, 
   ... 
 }:
-
 let
   # Get current user and config path dynamically
   username = config.home.username;
@@ -14,11 +13,20 @@ let
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     nixswitch = "sudo nixos-rebuild switch --flake ${configPath}#$(hostname)";
-    homeswitch = "cd ${configPath}/users && home-manager switch -f home.nix";
+    nixhomeswitch = "cd ${configPath}/users && home-manager switch --flake .#terp@nixos";
     nixfull = "nixswitch && homeswitch";
   };
 in
 {
+  # Do shell scripts
+  home.packages = with pkgs; [
+    (writeShellScriptBin "sway-tree" (builtins.readFile ../scripts/sway-tree.sh))
+    (writeShellScriptBin "nixos-update" (builtins.readFile ../scripts/nixos-update.sh))
+    (writeShellScriptBin "nixos-deploy" (builtins.readFile ../scripts/nixos-deploy.sh))
+    (writeShellScriptBin "sway-screenshot" (builtins.readFile ../scripts/sway-screenshot.sh))
+    (writeShellScriptBin "tmux-logging" (builtins.readFile ../scripts/tmux-logging.sh))
+    (writeShellScriptBin "zsh-logging" (builtins.readFile ../scripts/zsh-logging.sh))
+  ];
   
   # Starship fancy PS1
   programs.starship = {

@@ -40,6 +40,9 @@ home-manager build -f users/home.nix
 # Check configuration for errors
 home-manager build -f users/home.nix --dry-run
 
+# Run standalone home manager with experimental features
+home-manager switch --flake .#anon@linux --extra-experimental-features "nix-command flakes"
+
 # Apply configuration changes
 home-manager switch -f users/home.nix
 
@@ -52,8 +55,14 @@ home-manager generations
 # Rollback to previous generation
 home-manager rollback
 
-# Remove old generations (cleanup)
+# Remove NixOS system generations older than 7 days
+sudo nix-collect-garbage --delete-older-than 7d
+
+# Remove Home Manager generations older than 7 days
 home-manager expire-generations "-7 days"
+
+# Clean up the nix store (removes unreferenced packages)
+nix-store --gc
 ```
 
 ### Package Management
@@ -71,9 +80,6 @@ nix search nixpkgs --json python | jq
 
 # Show package information
 nix eval nixpkgs#firefox.meta.description
-
-# List all available packages (slow)
-nix-env -qaP '*' --description
 ```
 
 ### System Integration

@@ -1,16 +1,41 @@
-{ config, pkgs, ... }:
+{ 
+    config, 
+    pkgs, 
+    ... 
+}:
 
 {
     # Blacklist nouveau kernel module
     boot.blacklistedKernelModules = [ "nouveau" ];
    
-    # OpenGL
+    # Newer method here, commented out old
+    # https://wiki.nixos.org/wiki/Graphics -> move to hardware.graphics in 24.11
+    # https://wiki.nixos.org/wiki/NVIDIA -> nvidia
+    # https://wiki.nixos.org/wiki/CUDA -> cuda
     hardware.graphics = {
         enable = true;
         extraPackages = with pkgs; [
-            nvidia-vaapi-driver # VAAPI support for Nvidia GPUs
-            ocl-icd # OpenCL ICD loader
+            nvidia-vaapi-driver
+            clinfo
+            cudatoolkit
         ];
+    };
+    
+    # Deprecated, but needed for hashcat on 24.11
+    # hardware.opengl = {
+    #     enable = true;
+    #     extraPackages = with pkgs; [
+    #         nvidia-vaapi-driver
+    #         cudatoolkit
+    #         clinfo
+    #         ocl-icd
+    #     ];
+    # };
+
+    # Ensure CUDA is available in environment
+    environment.variables = {
+        CUDA_PATH = "${pkgs.cudatoolkit}";
+        CUDA_ROOT = "${pkgs.cudatoolkit}";
     };
 
     # Load nvidia driver for Xorg and Wayland

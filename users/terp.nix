@@ -24,6 +24,7 @@
     # Multiple scripts
     (writeShellScriptBin "sway-tree" (builtins.readFile ./scripts/sway-tree.sh))
     (writeShellScriptBin "nixos-update" (builtins.readFile ./scripts/nixos-update.sh))
+    (writeShellScriptBin "nixos-deploy" (builtins.readFile ./scripts/nixos-deploy.sh))
     (writeShellScriptBin "sway-screenshot" (builtins.readFile ./scripts/sway-screenshot.sh))
     (writeShellScriptBin "tmux-logging" (builtins.readFile ./scripts/tmux-logging.sh))
   ];
@@ -38,6 +39,7 @@
     ./modules/sway.nix
     ./modules/mako.nix
     ./modules/darkness.nix
+    ./modules/cloud.nix
   ];
 
   # Fixed username for NixOS

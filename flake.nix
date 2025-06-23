@@ -24,6 +24,7 @@
           ./hosts/modules/sway.nix
           ./hosts/modules/nvidia.nix
           ./hosts/modules/libvirtd.nix
+          ./hosts/modules/hashcat.nix
         ];
       };
     };
@@ -39,11 +40,8 @@
       };
 
       # Generic Linux (auto-detect username)
-      "auto@linux" = let
-        currentUser = builtins.getEnv "USER";
-      in home-manager.lib.homeManagerConfiguration {
+      "anon@linux" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { username = currentUser; };
         modules = [
           ./users/anon.nix
           { targets.genericLinux.enable = true; }
