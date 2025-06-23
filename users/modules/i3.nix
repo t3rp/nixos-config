@@ -62,7 +62,7 @@
         in {
           # Application launchers
           # "${mod}+Return" = "exec ${pkgs.rxvt-unicode}/bin/urxvt";
-          "${mod}+Return = "exec ${pkgs.alacritty}/bin/alacritty";
+          "${mod}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
           "${mod}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
           "${mod}+Shift+Return" = "exec ${pkgs.firefox}/bin/firefox";
           "${mod}+e" = "exec ${pkgs.nemo}/bin/nemo";
