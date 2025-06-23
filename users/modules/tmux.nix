@@ -90,7 +90,7 @@ in
       set-hook -g after-split-window 'run tmux-logging'
 
       # Bind Prefix+l to run zsh-logging.sh and show a status message
-      bind l send-keys 'source ${config.home.homeDirectory}/.config/scripts/zsh-logging.sh; tmux display-message "CSV Logging Started..."' C-m
+      bind l send-keys 'source zsh-logging; tmux display-message "CSV Logging Started..."' C-m
     '';
   };
 }
