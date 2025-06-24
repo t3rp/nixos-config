@@ -20,6 +20,14 @@
     rxvt-unicode
   ];
 
+  # Set cursor configuration
+  home.pointerCursor = {
+    name = "Adwaita";
+    package = pkgs.gnome.adwaita-icon-theme;
+    size = 16;
+    x11.enable = true;
+  };
+
   # Copy dotfiles
   home.file = {
     # i3 configuration
