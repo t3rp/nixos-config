@@ -34,6 +34,7 @@
     ./modules/darkness.nix
     ./modules/cloud.nix
     ./modules/i3.nix
+    ./modules/sway.nix
   ];
 
   # Linux

@@ -15,6 +15,7 @@ let
     nixswitch = "sudo nixos-rebuild switch --flake ${configPath}#$(hostname)";
     nixhomeswitch = "cd ${configPath}/users && home-manager switch --flake .#terp@nixos";
     nixfull = "nixswitch && homeswitch";
+    linuxhomeswitch = "cd ~/nixos-config && home-manager switch --flake .#anon@linux --extra-experimental-features 'nix-command flakes'";
   };
 in
 {
@@ -47,6 +48,11 @@ in
       # Source Home Manager session variables
       [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
         . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+      # Start ssh-agent if not already running
+      if [ -z "$SSH_AUTH_SOCK" ] ; then
+        eval "$(ssh-agent -s)"
+      fi
     '';
     
     # Add to .bash_profile
@@ -77,6 +83,11 @@ in
       # Source Home Manager session variables
       [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
         . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+      # Start ssh-agent if not already running
+      if [ -z "$SSH_AUTH_SOCK" ] ; then
+        eval "$(ssh-agent -s)"
+      fi
     '';
     
     # Add to .zprofile (login shell)
