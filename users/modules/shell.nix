@@ -15,6 +15,7 @@ let
     nixswitch = "sudo nixos-rebuild switch --flake ${configPath}#$(hostname)";
     nixhomeswitch = "cd ${configPath}/users && home-manager switch --flake .#terp@nixos";
     nixfull = "nixswitch && homeswitch";
+    linuxhomeswitch = "cd ~/nixos-config && home-manager switch --flake .#anon@linux --extra-experimental-features 'nix-command flakes'";
   };
 in
 {
