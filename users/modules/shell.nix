@@ -48,6 +48,11 @@ in
       # Source Home Manager session variables
       [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
         . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+      # Start ssh-agent if not already running
+      if [ -z "$SSH_AUTH_SOCK" ] ; then
+        eval "$(ssh-agent -s)"
+      fi
     '';
     
     # Add to .bash_profile
@@ -78,6 +83,11 @@ in
       # Source Home Manager session variables
       [ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ] && \
         . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+      # Start ssh-agent if not already running
+      if [ -z "$SSH_AUTH_SOCK" ] ; then
+        eval "$(ssh-agent -s)"
+      fi
     '';
     
     # Add to .zprofile (login shell)
