@@ -23,6 +23,18 @@ font pango:monospace 8
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
 
+# Screen lock
+bindsym $mod+Ctrl+l exec i3lock -c 000000
+
+# Screenshot - full screen
+bindsym Print exec scrot ~/Pictures/screenshot_%Y%m%d_%H%M%S.png && notify-send 'Screenshot saved'
+
+# Screenshot - select area
+bindsym $mod+Print exec scrot -s ~/Pictures/screenshot_%Y%m%d_%H%M%S.png
+
+# Screenshot - current window
+bindsym $mod+Shift+Print exec scrot -u ~/Pictures/screenshot_%Y%m%d_%H%M%S.png
+
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
 
