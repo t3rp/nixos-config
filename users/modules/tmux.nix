@@ -29,6 +29,9 @@ in
       set -g status-style "bg=default,fg=default"
       set -g status-left-style "bg=default,fg=default"
       set -g status-right-style "bg=default,fg=default"
+
+      # Clipboard
+      set -g set-clipboard on
       
       # Window status colors to match terminal
       set -g window-status-style "bg=default,fg=default"
