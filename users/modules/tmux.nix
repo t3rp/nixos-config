@@ -5,7 +5,26 @@
 }:
 
 let
+  # Configuration path
   tmuxConfigPath = "${config.home.homeDirectory}/.config/tmux/tmux.conf";
+
+  # Clipboard copy
+  clipboard-copy = pkgs.writeShellScript "clipboard-copy" ''
+    if [ -n "$WAYLAND_DISPLAY" ]; then
+      ${pkgs.wl-clipboard}/bin/wl-copy
+    else
+      ${pkgs.xclip}/bin/xclip -selection clipboard
+    fi
+  '';
+  
+  # Clipboard paste
+  clipboard-paste = pkgs.writeShellScript "clipboard-paste" ''
+    if [ -n "$WAYLAND_DISPLAY" ]; then
+      ${pkgs.wl-clipboard}/bin/wl-paste
+    else
+      ${pkgs.xclip}/bin/xclip -selection clipboard -o
+    fi
+  '';
 in
 {
   # Packages
@@ -41,13 +60,13 @@ in
       bind-key -T copy-mode-vi 'v' send -X begin-selection
       bind-key -T copy-mode-vi 'r' send -X rectangle-toggle
       
-      # X11 clipboard integration
-      bind-key -T copy-mode-vi 'y' send -X copy-pipe-and-cancel "${pkgs.xclip}/bin/xclip -selection clipboard"
-      bind-key -T copy-mode-vi Enter send -X copy-pipe-and-cancel "${pkgs.xclip}/bin/xclip -selection clipboard"
-      bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "${pkgs.xclip}/bin/xclip -selection clipboard"
+      # Universal clipboard integration
+      bind-key -T copy-mode-vi 'y' send -X copy-pipe-and-cancel "${clipboard-copy}"
+      bind-key -T copy-mode-vi Enter send -X copy-pipe-and-cancel "${clipboard-copy}"
+      bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "${clipboard-copy}"
       
-      # Paste from X11 clipboard
-      bind p run "${pkgs.xclip}/bin/xclip -selection clipboard -o | tmux load-buffer - && tmux paste-buffer"
+      # Paste from clipboard
+      bind p run "${clipboard-paste} | tmux load-buffer - && tmux paste-buffer"
 
       # Reload TMUX configuration
       bind r source-file ${tmuxConfigPath} \; display-message "TMUX Configuration Reloaded..."
