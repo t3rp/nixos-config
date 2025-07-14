@@ -76,5 +76,6 @@
     zoom-us # A video conferencing tool
     vlc # A video conferencing tool
     act # a tool to run GitHub Actions locally
+    chromium # browser
   ];
 }

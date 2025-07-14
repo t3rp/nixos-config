@@ -28,6 +28,7 @@
     ncdu
     jq
     feh
+    gvfs # for nemo and udiskie
   ];
 
   # Copy Sway and Waybar configs
@@ -52,5 +53,12 @@
       "x-scheme-handler/https" = "firefox.desktop";
       "inode/directory" = "nemo.desktop";
     };
+  };
+
+  # Auto mount USB drives
+  services.udiskie = {
+    enable = true;
+    tray = "never";
+    automount = true;
   };
 }
