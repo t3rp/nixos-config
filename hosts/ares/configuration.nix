@@ -154,6 +154,7 @@
     cudatoolkit # CUDA toolkit
     pwvucontrol # pwv control audio control
     helvum # helvum audio mixer
+    docker-compose # docker compose
   ];
   
   # This value determines the NixOS release from which the default
