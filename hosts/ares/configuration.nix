@@ -31,7 +31,7 @@
   };
 
   # Define hostname
-  networking.hostName = "ares"; # Define your hostname.
+  networking.hostName = "ares";
 
   # Enable networking
   networking.networkmanager.enable = true;
