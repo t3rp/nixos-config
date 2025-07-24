@@ -27,7 +27,6 @@
           ./hosts/modules/hashcat.nix
         ];
       };
-    };
 
       # === ATHENA ===
       athena = let
@@ -37,7 +36,7 @@
         inherit specialArgs;
         system = "x86_64-linux";
         modules = [
-          ./hosts/ares/configuration.nix
+          ./hosts/athena/configuration.nix
           ./hosts/modules/sway.nix
           ./hosts/modules/libvirtd.nix
         ];
