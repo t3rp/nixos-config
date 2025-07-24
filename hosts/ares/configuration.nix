@@ -31,7 +31,7 @@
   };
 
   # Define hostname
-  networking.hostName = "ares"; # Define your hostname.
+  networking.hostName = "ares";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -107,6 +107,27 @@
     '';
   };
 
+  # Firewall
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 22 ];
+    allowedUDPPorts = [ ];
+    allowPing = false;
+    extraCommands = ''
+      # Ensure all other traffic is blocked
+      iptables -P INPUT DROP
+      iptables -P FORWARD DROP
+      iptables -P OUTPUT ACCEPT
+      
+      # Allow loopback traffic
+      iptables -A INPUT -i lo -j ACCEPT
+      iptables -A OUTPUT -o lo -j ACCEPT
+      
+      # Allow established and related connections
+      iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    '';
+  };
+
   # Keyring configuration
   # services.gnome.gnome-keyring.enable = true;
   # security.polkit.enable = true;
@@ -155,8 +176,9 @@
     pwvucontrol # pwv control audio control
     helvum # helvum audio mixer
     docker-compose # docker compose
-  ];
-  
+    keychain # password manager
+];
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave

@@ -27,6 +27,20 @@
           ./hosts/modules/hashcat.nix
         ];
       };
+
+      # === ATHENA ===
+      athena = let
+        username = "terp";
+        specialArgs = {inherit username;};
+      in nixpkgs.lib.nixosSystem {
+        inherit specialArgs;
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/athena/configuration.nix
+          ./hosts/modules/sway.nix
+          ./hosts/modules/libvirtd.nix
+        ];
+      };
     };
 
     # Standalone Home Manager configurations
