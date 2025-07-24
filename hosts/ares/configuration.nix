@@ -176,6 +176,7 @@
     pwvucontrol # pwv control audio control
     helvum # helvum audio mixer
     docker-compose # docker compose
+    keychain # password manager
 ];
 
   # This value determines the NixOS release from which the default
