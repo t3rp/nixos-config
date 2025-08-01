@@ -3,13 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, ... }: {
     nixosConfigurations = {
 
       # === ARES ===
@@ -50,6 +51,14 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./users/terp.nix
+          {
+            # Make unstable packages available
+            nixpkgs.overlays = [
+              (final: prev: {
+                unstable = nixpkgs-unstable.legacyPackages.${prev.system};
+              })
+            ];
+          }
         ];
       };
 
@@ -58,7 +67,15 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./users/anon.nix
-          { targets.genericLinux.enable = true; }
+          { 
+            targets.genericLinux.enable = true;
+            # Make unstable packages available
+            nixpkgs.overlays = [
+              (final: prev: {
+                unstable = nixpkgs-unstable.legacyPackages.${prev.system};
+              })
+            ];
+            }
         ];
       };
     };
